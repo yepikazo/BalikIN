@@ -2,11 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Models\postingan;
+use App\Models\Postingan;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<postingan>
+ * @extends Factory<Postingan>
  */
 class PostinganFactory extends Factory
 {
