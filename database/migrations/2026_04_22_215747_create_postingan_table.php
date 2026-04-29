@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('kategori');
             $table->string('lokasi');
             $table->string('deskripsi');
-            $table->string('foto');
+            $table->string('foto')->nullable();
             $table->string('namaKontak');
             $table->string('noKontak');
             $table->enum('status',['dibuat','diamankan','selesai'])->default('dibuat');

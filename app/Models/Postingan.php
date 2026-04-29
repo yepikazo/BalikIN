@@ -9,13 +9,52 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Postingan extends Model
 {
-    protected $fillable = ['id_pelapor','namaBarang','kategori','lokasi','deskripsi','foto','namaKontak','noKontak','status','jenis'];
     /** @use HasFactory<\Database\Factories\PostinganFactory> */
     use HasFactory;
 
-    public function user(): BelongsTo
+    protected $table = 'postingan';
+
+    protected $fillable = [
+        'id_pelapor',
+        'namaBarang',
+        'kategori',
+        'lokasi',
+        'deskripsi',
+        'foto',
+        'namaKontak',
+        'noKontak',
+        'status',
+        'jenis',
+    ];
+
+    protected function casts(): array
     {
-        return $this->belongsTo(User::class);
+        return [
+            'status' => 'string',
+            'jenis'  => 'string',
+        ];
+    }
+
+    // ─── Scopes ───────────────────────────────────────────────────────────
+
+    public function scopeHilang($query)
+    {
+        return $query->where('jenis', 'barangHilang');
+    }
+
+    public function scopeDitemukan($query)
+    {
+        return $query->where('jenis', 'barangDitemukan');
+    }
+
+    // ─── Relationships ────────────────────────────────────────────────────
+
+    /**
+     * Pelapor yang membuat postingan ini.
+     */
+    public function pelapor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'id_pelapor');
     }
 
     public function laporan(): HasMany

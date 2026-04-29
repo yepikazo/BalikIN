@@ -8,12 +8,32 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Laporan extends Model
 {
-    protected $fillable = ['id_pelapor','id_postingan','alasan'];
     /** @use HasFactory<\Database\Factories\LaporanFactory> */
     use HasFactory;
 
-    public function user(): BelongsTo
+    protected $table = 'laporan';
+
+    protected $fillable = [
+        'id_pelapor',
+        'id_postingan',
+        'alasan',
+    ];
+
+    // ─── Relationships ────────────────────────────────────────────────────
+
+    /**
+     * User yang membuat laporan ini.
+     */
+    public function pelapor(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'id_pelapor');
+    }
+
+    /**
+     * Postingan yang dilaporkan.
+     */
+    public function postingan(): BelongsTo
+    {
+        return $this->belongsTo(Postingan::class, 'id_postingan');
     }
 }
