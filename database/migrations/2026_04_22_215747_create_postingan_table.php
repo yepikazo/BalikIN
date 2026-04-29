@@ -13,19 +13,19 @@ return new class extends Migration
     {
         Schema::create('postingan', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_pelapor')->constrained(
-                table: 'users',
-                indexName: 'postingan_id_pelapor'
-            );
-            $table->string('namaBarang');
+
+            // Relasi ke tabel users
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+
+            $table->enum('tipe', ['hilang', 'ditemukan']);
+            $table->string('nama_barang');
             $table->string('kategori');
             $table->string('lokasi');
-            $table->string('deskripsi');
-            $table->string('foto');
-            $table->string('namaKontak');
-            $table->string('noKontak');
-            $table->enum('status',['dibuat','diamankan','selesai'])->default('dibuat');
-            $table->enum('jenis',['barangHilang','barangDitemukan'])->default('barangHilang');
+            $table->dateTime('waktu_kejadian');
+            $table->text('deskripsi');
+            $table->string('foto')->nullable();
+            $table->enum('status', ['aktif', 'selesai'])->default('aktif');
+
             $table->timestamps();
         });
     }

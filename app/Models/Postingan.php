@@ -2,24 +2,42 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Postingan extends Model
 {
-    protected $fillable = ['id_pelapor','namaBarang','kategori','lokasi','deskripsi','foto','namaKontak','noKontak','status','jenis'];
-    /** @use HasFactory<\Database\Factories\PostinganFactory> */
     use HasFactory;
 
-    public function user(): BelongsTo
+    protected $table = 'postingan'; // Nama tabel kustom
+
+    protected $fillable = [
+        'user_id',
+        'tipe',
+        'nama_barang',
+        'kategori',
+        'lokasi',
+        'waktu_kejadian',
+        'deskripsi',
+        'foto',
+        'status',
+    ];
+
+    // Relasi ke User (Pembuat Postingan)
+    public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function laporan(): HasMany
+    // Relasi ke Komentar
+    public function comments()
     {
-        return $this->hasMany(Laporan::class, 'id_postingan');
+        return $this->hasMany(Comment::class, 'postingan_id');
+    }
+
+    // Relasi ke Laporan fiktif
+    public function laporan()
+    {
+        return $this->hasMany(Laporan::class, 'postingan_id');
     }
 }

@@ -2,58 +2,65 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'email',
         'password',
+        'google_id',
+        'is_admin',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
         ];
     }
 
-    public function postingan(): HasMany
+    // --- RELASI ---
+
+    // User memiliki banyak postingan
+    public function postingan()
     {
-        return $this->hasMany(Postingan::class, 'id_pelapor');
+        return $this->hasMany(Postingan::class);
     }
 
-    public function laporan(): HasMany
+    // User memiliki banyak komentar
+    public function comments()
     {
-        return $this->hasMany(Laporan::class, 'id_pelapor');
+        return $this->hasMany(Comment::class);
+    }
+
+    // User sebagai pelapor dalam tabel laporan
+    public function laporanDibuat()
+    {
+        return $this->hasMany(Laporan::class, 'pelapor_id');
+    }
+
+    // Relasi untuk Messenger (Pesan Terkirim)
+    public function messagesSent()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+
+    // Relasi untuk Messenger (Pesan Diterima)
+    public function messagesReceived()
+    {
+        return $this->hasMany(Message::class, 'receiver_id');
     }
 }
