@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Laporan extends Model
 {
-    use HasFactory; // 2. Tambahkan ini
+    use HasFactory;
     protected $table = 'laporan'; // Nama tabel kustom
 
     protected $fillable = [
