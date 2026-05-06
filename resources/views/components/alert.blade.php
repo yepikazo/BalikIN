@@ -1,13 +1,13 @@
 @if (session('success'))
-    <div class="mb-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-sm" role="alert">
-        <p class="font-bold">Berhasil!</p>
-        <p>{{ session('success') }}</p>
-    </div>
+    <div class="bk-alert bk-alert--success" style="margin-bottom:1.25rem">{{ session('success') }}</div>
 @endif
-
 @if (session('error'))
-    <div class="mb-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-sm" role="alert">
-        <p class="font-bold">Gagal!</p>
-        <p>{{ session('error') }}</p>
+    <div class="bk-alert bk-alert--error" style="margin-bottom:1.25rem">{{ session('error') }}</div>
+@endif
+@if ($errors->any())
+    <div class="bk-alert bk-alert--error" style="margin-bottom:1.25rem">
+        @foreach ($errors->all() as $error)
+            <div>{{ $error }}</div>
+        @endforeach
     </div>
 @endif

@@ -40,7 +40,11 @@ class MessageController extends Controller
 
         $validated['sender_id'] = Auth::id();
 
-        Message::create($validated);
+        $message = Message::create($validated);
+
+        if ($request->wantsJson() || $request->expectsJson()) {
+            return response()->json(['message' => $message, 'status' => 'sent']);
+        }
 
         return back()->with('success', 'Pesan berhasil dikirim.');
     }

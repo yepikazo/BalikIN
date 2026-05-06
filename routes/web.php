@@ -49,3 +49,16 @@ Route::middleware(['auth', 'admin'])->group(function () {
 });
 
 require __DIR__.'/auth.php'; // Bawaan Laravel Breeze
+// --- OAuth ---
+use App\Http\Controllers\OAuthController;
+Route::get('/auth/google',          [OAuthController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('/auth/google/callback', [OAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+Route::get('/auth/github',          [OAuthController::class, 'redirectToGithub'])->name('auth.github');
+Route::get('/auth/github/callback', [OAuthController::class, 'handleGithubCallback'])->name('auth.github.callback');
+
+// --- Chat API (JSON) ---
+use App\Http\Controllers\Api\ConversationController;
+Route::middleware('auth')->prefix('api')->group(function () {
+    Route::get('/conversations',      [ConversationController::class, 'index']);
+    Route::get('/messages/{userId}',  [ConversationController::class, 'messages']);
+});
