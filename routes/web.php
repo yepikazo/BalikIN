@@ -44,15 +44,21 @@ Route::middleware('auth')->group(function () {
 // ===========================
 use App\Http\Controllers\AdminController;
 
-Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
 
-    // Manajemen Laporan
-    Route::get('/admin/laporan', [AdminController::class, 'daftarLaporan'])->name('admin.laporan');
-    Route::put('/admin/laporan/{id}', [AdminController::class, 'updateStatusLaporan'])->name('admin.laporan.update');
+    // Dashboard
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
-    // Hapus postingan langsung lewat admin
-    Route::delete('/admin/postingan/{id}', [AdminController::class, 'hapusPostinganFiktif'])->name('admin.postingan.destroy');
+    // Kelola Postingan
+    Route::get('/postingan', [AdminController::class, 'daftarPostingan'])->name('postingan.index');
+    Route::put('/postingan/{id}/tipe', [AdminController::class, 'updateTipePostingan'])->name('postingan.updateTipe');
+
+    // Kelola Laporan
+    Route::get('/laporan', [AdminController::class, 'daftarLaporan'])->name('laporan');
+    Route::put('/laporan/{id}', [AdminController::class, 'updateStatusLaporan'])->name('laporan.update');
+
+    // Legacy: direct suspend dari halaman laporan
+    Route::put('/postingan-fiktif/{id}', [AdminController::class, 'updatePostinganFiktif'])->name('postingan.update');
 });
 
 
@@ -67,8 +73,8 @@ require __DIR__ . '/auth.php';
 // ===========================
 use App\Http\Controllers\OAuthController;
 
-Route::get('/auth/google',           [OAuthController::class, 'redirectToGoogle'])->name('auth.google');
-Route::get('/auth/google/callback',  [OAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+Route::get('/auth/google',          [OAuthController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('/auth/google/callback', [OAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 
 // ===========================
 // API (JSON — untuk Chat Panel Floating)

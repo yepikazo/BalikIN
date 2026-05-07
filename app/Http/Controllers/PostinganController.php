@@ -12,7 +12,7 @@ class PostinganController extends Controller
     // 1. Menampilkan semua postingan (Halaman Beranda)
     public function index(Request $request)
     {
-        $query = Postingan::with('user')->where('status', 'aktif')->latest();
+        $query = Postingan::with('user')->whereNotIn('tipe', ['suspend', 'selesai'])->latest();
 
         // Filter berdasarkan tipe (hilang/ditemukan)
         if ($request->filled('tipe') && in_array($request->tipe, ['hilang', 'ditemukan', 'diamankan'])) {
@@ -69,7 +69,7 @@ class PostinganController extends Controller
 
         // Otomatis tambahkan ID user yang sedang login dan status default
         $validated['user_id'] = Auth::id();
-        $validated['status'] = 'aktif';
+        // $validated['status'] = 'aktif';
 
         Postingan::create($validated);
 
@@ -111,14 +111,13 @@ class PostinganController extends Controller
         }
 
         $validated = $request->validate([
-            'tipe' => 'required|in:hilang,ditemukan',
-            'nama_barang' => 'required|string|max:255',
-            'kategori' => 'required|string|max:255',
-            'lokasi' => 'required|string|max:255',
+            'tipe'           => 'required|in:hilang,ditemukan',
+            'nama_barang'    => 'required|string|max:255',
+            'kategori'       => 'required|string|max:255',
+            'lokasi'         => 'required|string|max:255',
             'waktu_kejadian' => 'required|date',
-            'deskripsi' => 'required|string',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'status' => 'required|in:aktif,selesai',
+            'deskripsi'      => 'required|string',
+            'foto'           => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         // Proses ganti foto jika ada foto baru yang diunggah

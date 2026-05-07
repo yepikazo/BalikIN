@@ -21,7 +21,7 @@ class PostinganFactory extends Factory
             'waktu_kejadian' => fake()->dateTimeBetween('-2 months', 'now'),
             'deskripsi' => fake()->paragraph(3),
             'foto' => null, // Kosongkan foto dummy sementara
-            'status' => fake()->randomElement(['aktif', 'aktif', 'selesai']), // Rasio aktif lebih banyak
+            // 'status' => fake()->randomElement(['aktif', 'aktif', 'selesai']), // Rasio aktif lebih banyak
         ];
     }
 }

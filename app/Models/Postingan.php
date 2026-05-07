@@ -20,7 +20,7 @@ class Postingan extends Model
         'waktu_kejadian',
         'deskripsi',
         'foto',
-        'status',
+        // 'status',
     ];
 
     // Relasi ke User (Pembuat Postingan)

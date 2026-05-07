@@ -10,59 +10,106 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
-    // Halaman Dashboard Utama Admin
+    // ─── Dashboard ────────────────────────────────────────────
     public function dashboard()
     {
-        // Mengambil statistik sederhana untuk ditampilkan
         $totalPostingan = Postingan::count();
-        $totalLaporan = Laporan::count();
+        $totalLaporan   = Laporan::count();
         $laporanPending = Laporan::where('status_laporan', 'pending')->count();
-        $totalUser = User::count();
+        $totalUser      = User::count();
 
-        return view('admin.dashboard', compact('totalPostingan', 'totalLaporan', 'laporanPending', 'totalUser'));
+        return view('admin.dashboard', compact(
+            'totalPostingan',
+            'totalLaporan',
+            'laporanPending',
+            'totalUser'
+        ));
     }
 
-    // Menampilkan daftar semua laporan fiktif
+    // ─── Kelola Postingan ─────────────────────────────────────
+    public function daftarPostingan(Request $request)
+    {
+        $query = Postingan::with('user')->latest();
+
+        // Filter tipe
+        if ($request->filled('tipe') && in_array($request->tipe, ['hilang','ditemukan','diamankan','selesai','suspend'])) {
+            $query->where('tipe', $request->tipe);
+        }
+
+        // Search nama barang / pemilik
+        if ($request->filled('q')) {
+            $q = $request->q;
+            $query->where(function ($sub) use ($q) {
+                $sub->where('nama_barang', 'like', "%{$q}%")
+                    ->orWhereHas('user', fn($u) => $u->where('name', 'like', "%{$q}%"));
+            });
+        }
+
+        $postingan = $query->get();
+
+        return view('admin.postingan', compact('postingan'));
+    }
+
+    /**
+     * Admin mengubah tipe postingan:
+     * bisa ke 'diamankan', 'selesai', 'suspend', atau kembali ke 'hilang'.
+     */
+    public function updateTipePostingan(Request $request, string $id)
+    {
+        $postingan = Postingan::findOrFail($id);
+
+        $validated = $request->validate([
+            'tipe' => 'required|in:hilang,ditemukan,diamankan,selesai,suspend',
+        ]);
+
+        $postingan->update(['tipe' => $validated['tipe']]);
+
+        $pesan = match($validated['tipe']) {
+            'diamankan' => 'Postingan ditandai sebagai Diamankan. Chat sekarang diarahkan ke admin.',
+            'selesai'   => 'Postingan ditandai sebagai Selesai.',
+            'suspend'   => 'Postingan berhasil disuspend.',
+            default     => 'Tipe postingan berhasil diperbarui.',
+        };
+
+        return back()->with('success', $pesan);
+    }
+
+    // ─── Kelola Laporan ───────────────────────────────────────
     public function daftarLaporan()
     {
-        // Ambil data laporan beserta relasi pelapor, postingannya, dan admin yang menangani
-        $laporan = Laporan::with(['pelapor', 'postingan', 'admin'])->latest()->get();
-        
+        $laporan = Laporan::with(['pelapor', 'postingan.user', 'admin'])->latest()->get();
+
         return view('admin.laporan', compact('laporan'));
     }
 
-    // Mengubah status laporan (misal dari "pending" jadi "diproses" atau "selesai")
     public function updateStatusLaporan(Request $request, string $id)
     {
-        $laporan = Laporan::findOrFail($id);
-        
+        $laporan   = Laporan::findOrFail($id);
+        $postingan = Postingan::findOrFail($laporan->postingan_id);
+
         $validated = $request->validate([
-            'status_laporan' => 'required|in:pending,diproses,selesai',
+            'status_laporan' => 'required|in:pending,disetujui,tolak',
         ]);
 
-        // Update status dan catat ID Admin yang melakukan aksi tersebut
         $laporan->update([
             'status_laporan' => $validated['status_laporan'],
-            'admin_id'       => Auth::id(), 
+            'admin_id'       => Auth::id(),
         ]);
+
+        // Jika laporan disetujui, otomatis suspend postingan terkait
+        if ($validated['status_laporan'] === 'disetujui') {
+            $postingan->update(['tipe' => 'suspend']);
+        }
 
         return back()->with('success', 'Status laporan berhasil diperbarui.');
     }
 
-    // Admin menghapus postingan yang terbukti fiktif (langsung dari halaman laporan)
-    public function hapusPostinganFiktif(string $id)
+    // ─── (Legacy) Direct suspend postingan ───────────────────
+    public function updatePostinganFiktif(string $id)
     {
         $postingan = Postingan::findOrFail($id);
-        
-        // Hapus file foto dari storage jika ada
-        if ($postingan->foto) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($postingan->foto);
-        }
+        $postingan->update(['tipe' => 'suspend']);
 
-        $postingan->delete();
-        // Catatan: Karena kita pakai cascadeOnDelete di migrasi, otomatis 
-        // laporan dan komentar yang terkait postingan ini juga ikut terhapus di database!
-
-        return back()->with('success', 'Postingan fiktif berhasil dihapus beserta laporannya.');
+        return back()->with('success', 'Postingan berhasil disuspend.');
     }
 }

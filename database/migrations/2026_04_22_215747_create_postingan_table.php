@@ -17,14 +17,14 @@ return new class extends Migration
             // Relasi ke tabel users
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
 
-            $table->enum('tipe', ['hilang', 'ditemukan', 'diamankan']);
+            $table->enum('tipe', ['hilang', 'ditemukan', 'diamankan', 'selesai', 'suspend']);
             $table->string('nama_barang');
             $table->string('kategori');
             $table->string('lokasi');
             $table->dateTime('waktu_kejadian');
             $table->text('deskripsi');
             $table->string('foto')->nullable();
-            $table->enum('status', ['aktif', 'selesai'])->default('aktif');
+            // $table->enum('status', ['aktif', 'selesai'])->default('aktif');
 
             $table->timestamps();
         });

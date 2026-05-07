@@ -13,7 +13,16 @@
             Kembali ke Beranda
         </a>
 
+         {{-- @if($postingan->tipe === 'suspend')
+                <div style="padding:1.5rem;border:1px solid var(--danger);background:var(--danger-light);color:var(--danger-dark);border-radius:var(--radius-md);margin-bottom:1.5rem">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:0.5rem"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                    Postingan ini telah disuspend oleh admin karena terbukti fiktif. Konten tidak dapat ditampilkan.
+                </div>
+            @endif
+            @else --}}
+
         <div class="bk-card" style="box-shadow:var(--shadow-md)">
+           
 
             {{-- Header --}}
             <div style="padding:1.75rem 2rem;border-bottom:1px solid var(--border-subtle)">
@@ -146,93 +155,137 @@
                         </div>
 
                         {{-- ======================================
-                             TOMBOL HUBUNGI PELAPOR
+                             TOMBOL HUBUNGI / KONTAK
+                             Jika tipe = diamankan → chat ke admin
+                             Jika tipe = normal    → chat ke pelapor
                         ====================================== --}}
                         @auth
                             @if (Auth::id() !== $postingan->user_id)
-                                @if ($postingan->status === 'aktif')
-                                    {{-- Tombol Utama Hubungi --}}
-                                    <div
-                                        style="background:linear-gradient(135deg,var(--accent-light),#fff8ee);border:1px solid rgba(200,146,42,0.25);border-radius:var(--radius-md);padding:1.25rem">
+
+                                @if ($postingan->tipe === 'selesai')
+                                    {{-- ---- SELESAI ---- --}}
+                                    <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-md);padding:1.25rem;text-align:center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"
+                                             viewBox="0 0 24 24" fill="none" stroke="var(--success)"
+                                             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                                             style="margin:0 auto 0.5rem;display:block">
+                                            <polyline points="20 6 9 17 4 12"/>
+                                        </svg>
+                                        <p style="font-size:0.85rem;font-weight:600;color:var(--ink-muted)">Laporan ini sudah selesai</p>
+                                        <p style="font-size:0.78rem;color:var(--ink-faint);margin-top:0.3rem">Barang sudah ditemukan / diserahkan.</p>
+                                    </div>
+
+                                @elseif ($postingan->tipe === 'suspend')
+                                    {{-- ---- SUSPEND ---- --}}
+                                    <div style="background:#1f1f1f;border-radius:var(--radius-md);padding:1.25rem;text-align:center">
+                                        <p style="font-size:0.85rem;font-weight:600;color:#f87171">Postingan ini disuspend</p>
+                                        <p style="font-size:0.78rem;color:rgba(255,255,255,0.4);margin-top:0.3rem">Kontak tidak tersedia.</p>
+                                    </div>
+
+                                @elseif ($postingan->tipe === 'diamankan')
+                                    {{-- ---- DIAMANKAN → CHAT ADMIN ---- --}}
+                                    @php
+                                        $adminUser = \App\Models\User::where('is_admin', true)->first();
+                                    @endphp
+                                    <div style="background:linear-gradient(135deg,#dbeafe,#eff6ff);border:1px solid #bfdbfe;border-radius:var(--radius-md);padding:1.25rem">
+                                        <div style="display:flex;align-items:center;gap:0.625rem;margin-bottom:0.875rem">
+                                            <div style="width:36px;height:36px;border-radius:var(--radius-full);background:#1e40af;color:white;font-size:0.85rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                                                🔒
+                                            </div>
+                                            <div>
+                                                <div style="font-weight:700;color:#1e3a8a;font-size:0.9rem">Barang Diamankan</div>
+                                                <div style="font-size:0.75rem;color:#3b82f6">Barang ini sedang dalam pengawasan admin</div>
+                                            </div>
+                                        </div>
+                                        <p style="font-size:0.8rem;color:#1e40af;line-height:1.5;margin-bottom:1rem">
+                                            Barang ini telah diamankan oleh admin. Hubungi admin untuk informasi lebih lanjut mengenai proses pengambilan.
+                                        </p>
+                                        @if($adminUser)
+                                            <button id="btn-hubungi"
+                                                onclick="openChatWith({{ $adminUser->id }}, '{{ addslashes($adminUser->name) }}', '{{ addslashes($postingan->nama_barang) }}')"
+                                                style="width:100%;padding:0.7rem 1rem;background:#1e40af;color:white;border:none;border-radius:var(--radius-md);font-size:0.875rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;transition:all 0.2s;font-family:var(--font-body)"
+                                                onmouseover="this.style.background='#1e3a8a';this.style.transform='translateY(-1px)'"
+                                                onmouseout="this.style.background='#1e40af';this.style.transform=''">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15"
+                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                                </svg>
+                                                Hubungi Admin
+                                            </button>
+                                            <p style="font-size:0.72rem;color:#3b82f6;text-align:center;margin-top:0.5rem">
+                                                Chat dengan admin Balik.in
+                                            </p>
+                                        @else
+                                            <p style="font-size:0.82rem;color:#1e40af;text-align:center;font-style:italic">
+                                                Hubungi admin melalui halaman Pesan.
+                                            </p>
+                                        @endif
+                                    </div>
+
+                                @else
+                                    {{-- ---- NORMAL (hilang / ditemukan) → CHAT PELAPOR ---- --}}
+                                    <div style="background:linear-gradient(135deg,var(--accent-light),#fff8ee);border:1px solid rgba(200,146,42,0.25);border-radius:var(--radius-md);padding:1.25rem">
                                         <div style="display:flex;align-items:flex-start;gap:0.875rem">
-                                            {{-- Avatar pelapor --}}
-                                            <div
-                                                style="width:44px;height:44px;border-radius:var(--radius-full);background:var(--accent);color:white;font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 8px rgba(200,146,42,0.3)">
+                                            <div style="width:44px;height:44px;border-radius:var(--radius-full);background:var(--accent);color:white;font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 8px rgba(200,146,42,0.3)">
                                                 {{ strtoupper(substr($postingan->user->name, 0, 1)) }}
                                             </div>
                                             <div style="flex:1">
-                                                <div style="font-size:0.78rem;color:var(--ink-faint);margin-bottom:2px">
-                                                    Pelapor</div>
-                                                <div style="font-weight:700;color:var(--ink);font-size:0.95rem">
-                                                    {{ $postingan->user->name }}</div>
+                                                <div style="font-size:0.78rem;color:var(--ink-faint);margin-bottom:2px">Pelapor</div>
+                                                <div style="font-weight:700;color:var(--ink);font-size:0.95rem">{{ $postingan->user->name }}</div>
                                                 <div style="font-size:0.78rem;color:var(--ink-muted);margin-top:3px">
                                                     Bergabung {{ $postingan->user->created_at->format('M Y') }}
                                                 </div>
                                             </div>
                                         </div>
-
                                         <button id="btn-hubungi"
                                             onclick="openChatWith({{ $postingan->user_id }}, '{{ addslashes($postingan->user->name) }}', '{{ addslashes($postingan->nama_barang) }}')"
                                             style="margin-top:1rem;width:100%;padding:0.7rem 1rem;background:var(--accent);color:white;border:none;border-radius:var(--radius-md);font-size:0.875rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;transition:all 0.2s;font-family:var(--font-body)"
                                             onmouseover="this.style.background='var(--accent-dark)';this.style.transform='translateY(-1px)'"
                                             onmouseout="this.style.background='var(--accent)';this.style.transform=''">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                                             </svg>
                                             Hubungi {{ $postingan->user->name }}
                                         </button>
-
-                                        <p
-                                            style="font-size:0.75rem;color:var(--ink-faint);text-align:center;margin-top:0.625rem">
+                                        <p style="font-size:0.75rem;color:var(--ink-faint);text-align:center;margin-top:0.625rem">
                                             Pesan akan langsung masuk ke chat
                                         </p>
                                     </div>
-                                @else
-                                    {{-- Status Selesai --}}
-                                    <div
-                                        style="background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-md);padding:1.25rem;text-align:center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"
-                                            viewBox="0 0 24 24" fill="none" stroke="var(--ink-faint)"
-                                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
-                                            style="margin:0 auto 0.5rem;display:block">
-                                            <polyline points="20 6 9 17 4 12" />
-                                        </svg>
-                                        <p style="font-size:0.85rem;font-weight:600;color:var(--ink-muted)">Laporan ini
-                                            sudah selesai</p>
-                                        <p style="font-size:0.78rem;color:var(--ink-faint);margin-top:0.3rem">Barang sudah
-                                            ditemukan / diserahkan.</p>
-                                    </div>
                                 @endif
+
                             @else
                                 {{-- Pemilik sendiri --}}
-                                <div
-                                    style="background:var(--surface-2);border:1px dashed var(--border);border-radius:var(--radius-md);padding:1rem;text-align:center">
-                                    <p style="font-size:0.82rem;color:var(--ink-muted)">Ini adalah postingan Anda sendiri.
-                                    </p>
+                                <div style="background:var(--surface-2);border:1px dashed var(--border);border-radius:var(--radius-md);padding:1rem;text-align:center">
+                                    <p style="font-size:0.82rem;color:var(--ink-muted)">Ini adalah postingan Anda sendiri.</p>
+                                    <a href="{{ route('postingan.edit', $postingan->id) }}"
+                                       style="display:inline-flex;align-items:center;gap:0.4rem;margin-top:0.625rem;font-size:0.8rem;color:var(--accent-dark);font-weight:600">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                        </svg>
+                                        Edit Postingan
+                                    </a>
                                 </div>
                             @endif
                         @else
                             {{-- Belum login --}}
-                            <div
-                                style="background:var(--accent-light);border:1px solid rgba(200,146,42,0.25);border-radius:var(--radius-md);padding:1.25rem;text-align:center">
+                            <div style="background:var(--accent-light);border:1px solid rgba(200,146,42,0.25);border-radius:var(--radius-md);padding:1.25rem;text-align:center">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"
-                                    viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5"
-                                    stroke-linecap="round" stroke-linejoin="round"
-                                    style="margin:0 auto 0.75rem;display:block">
-                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                     viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5"
+                                     stroke-linecap="round" stroke-linejoin="round"
+                                     style="margin:0 auto 0.75rem;display:block">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                                 </svg>
-                                <p
-                                    style="font-size:0.875rem;font-weight:600;color:var(--accent-dark);margin-bottom:0.5rem">
+                                <p style="font-size:0.875rem;font-weight:600;color:var(--accent-dark);margin-bottom:0.5rem">
                                     Ingin menghubungi pelapor?</p>
-                                <p style="font-size:0.8rem;color:var(--ink-muted);margin-bottom:0.875rem">Login untuk
-                                    mengirim pesan langsung.</p>
+                                <p style="font-size:0.8rem;color:var(--ink-muted);margin-bottom:0.875rem">Login untuk mengirim pesan langsung.</p>
                                 <div style="display:flex;gap:0.5rem;justify-content:center">
-                                    <a href="{{ route('login') }}" class="bk-btn bk-btn--accent"
-                                        style="font-size:0.82rem">Masuk</a>
-                                    <a href="{{ route('register') }}" class="bk-btn bk-btn--ghost"
-                                        style="font-size:0.82rem">Daftar</a>
+                                    <a href="{{ route('login') }}" class="bk-btn bk-btn--accent" style="font-size:0.82rem">Masuk</a>
+                                    <a href="{{ route('register') }}" class="bk-btn bk-btn--ghost" style="font-size:0.82rem">Daftar</a>
                                 </div>
                             </div>
                         @endauth
