@@ -22,8 +22,8 @@
                         <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;margin-bottom:0.875rem">
                             <span
                                 class="bk-badge {{ $postingan->tipe == 'hilang' ? 'bk-badge--hilang' : 'bk-badge--ditemukan' }}">{{ $postingan->tipe }}</span>
-                            <span
-                                class="bk-badge {{ $postingan->status == 'aktif' ? 'bk-badge--aktif' : 'bk-badge--selesai' }}">{{ $postingan->status }}</span>
+                            {{-- <span
+                                class="bk-badge {{ $postingan->status == 'aktif' ? 'bk-badge--aktif' : 'bk-badge--selesai' }}">{{ $postingan->status }}</span> --}}
                         </div>
                         <h1
                             style="font-size:1.85rem;font-weight:800;letter-spacing:-0.03em;line-height:1.2;color:var(--ink)">
