@@ -51,23 +51,43 @@ class AdminController extends Controller
     }
 
     /**
-     * Admin mengubah tipe postingan:
-     * bisa ke 'diamankan', 'selesai', 'suspend', atau kembali ke 'hilang'.
+     * Admin mengubah tipe postingan.
+     * Khusus suspend: simpan tipe sebelumnya.
+     * Khusus restore: kembalikan ke tipe sebelum suspend.
      */
     public function updateTipePostingan(Request $request, string $id)
     {
         $postingan = Postingan::findOrFail($id);
 
         $validated = $request->validate([
-            'tipe' => 'required|in:hilang,ditemukan,diamankan,selesai,suspend',
+            'tipe' => 'required|in:hilang,ditemukan,diamankan,selesai,suspend,restore',
         ]);
 
+        if ($validated['tipe'] === 'suspend') {
+            // Simpan tipe saat ini sebelum di-suspend
+            $postingan->update([
+                'tipe_sebelumnya' => $postingan->tipe,
+                'tipe'            => 'suspend',
+            ]);
+            return back()->with('success', 'Postingan berhasil disuspend.');
+        }
+
+        if ($validated['tipe'] === 'restore') {
+            // Kembalikan ke tipe sebelum suspend (fallback ke hilang)
+            $tipePulih = $postingan->tipe_sebelumnya ?? 'hilang';
+            $postingan->update([
+                'tipe'            => $tipePulih,
+                'tipe_sebelumnya' => null,
+            ]);
+            return back()->with('success', "Postingan berhasil diaktifkan kembali ke tipe: {$tipePulih}.");
+        }
+
+        // Update tipe biasa (diamankan / selesai / hilang / ditemukan)
         $postingan->update(['tipe' => $validated['tipe']]);
 
         $pesan = match($validated['tipe']) {
             'diamankan' => 'Postingan ditandai sebagai Diamankan. Chat sekarang diarahkan ke admin.',
             'selesai'   => 'Postingan ditandai sebagai Selesai.',
-            'suspend'   => 'Postingan berhasil disuspend.',
             default     => 'Tipe postingan berhasil diperbarui.',
         };
 
@@ -88,7 +108,7 @@ class AdminController extends Controller
         $postingan = Postingan::findOrFail($laporan->postingan_id);
 
         $validated = $request->validate([
-            'status_laporan' => 'required|in:pending,disetujui,tolak',
+            'status_laporan' => 'required|in:pending,disetujui,ditolak',
         ]);
 
         $laporan->update([
@@ -98,7 +118,10 @@ class AdminController extends Controller
 
         // Jika laporan disetujui, otomatis suspend postingan terkait
         if ($validated['status_laporan'] === 'disetujui') {
-            $postingan->update(['tipe' => 'suspend']);
+            $postingan->update([
+                'tipe_sebelumnya' => $postingan->tipe, // simpan tipe asli sebelum suspend
+                'tipe'            => 'suspend',
+            ]);
         }
 
         return back()->with('success', 'Status laporan berhasil diperbarui.');

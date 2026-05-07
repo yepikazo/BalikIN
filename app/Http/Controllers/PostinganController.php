@@ -155,4 +155,15 @@ class PostinganController extends Controller
 
         return redirect()->route('beranda')->with('success', 'Postingan berhasil dihapus.');
     }
+
+    // 8. Menampilkan postingan milik user yang sedang login
+    public function myPosts()
+    {
+        $postingan = Postingan::with('user')
+            ->where('user_id', Auth::id())
+            ->latest()
+            ->get();
+
+        return view('postingan.saya', compact('postingan'));
+    }
 }

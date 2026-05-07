@@ -11,11 +11,11 @@
             <table style="width:100%;border-collapse:collapse;font-size:0.875rem">
                 <thead>
                     <tr style="background:var(--surface-2);border-bottom:1px solid var(--border)">
-                        <th style="padding:0.875rem 1.25rem;text-align:left;font-size:0.68rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);white-space:nowrap">Pelapor</th>
+                        <th style="padding:0.875rem 1.25rem;text-align:center;font-size:0.68rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);white-space:nowrap">Pelapor</th>
                         <th style="padding:0.875rem 1.25rem;text-align:left;font-size:0.68rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);white-space:nowrap">Barang Dilaporkan</th>
-                        <th style="padding:0.875rem 1.25rem;text-align:left;font-size:0.68rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);min-width:200px">Alasan</th>
-                        <th style="padding:0.875rem 1.25rem;text-align:left;font-size:0.68rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);white-space:nowrap">Status</th>
-                        <th style="padding:0.875rem 1.25rem;text-align:center;font-size:0.68rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);white-space:nowrap">Aksi</th>
+                        <th style="padding:0.875rem 1.25rem;text-align:center;font-size:0.68rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);min-width:200px">Alasan</th>
+                        <th style="padding:0.875rem 1.25rem;text-align:center;font-size:0.68rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);white-space:nowrap">Status</th>
+                        <th style="padding:0.875rem 1.25rem;text-align:center;font-size:0.68rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);white-space:nowrap;width:180px">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -64,28 +64,28 @@
                             </td>
 
                             {{-- Status --}}
-                            <td style="padding:1rem 1.25rem">
+                            <td style="padding:1rem 1.25rem;text-align:center">
                                 @if($lap->status_laporan == 'pending')
-                                    <span class="bk-badge" style="background:#fef9c3;color:#854d0e">⏳ Pending</span>
+                                    <span class="bk-badge" style="background:#fef9c3;color:#854d0e">Pending</span>
                                 @elseif($lap->status_laporan == 'disetujui')
-                                    <span class="bk-badge" style="background:#dbeafe;color:#1e40af">✅ Disetujui</span>
-                                @elseif($lap->status_laporan == 'tolak')
-                                    <span class="bk-badge" style="background:var(--danger-light);color:var(--danger)">❌ Tolak</span>
+                                    <span class="bk-badge" style="background:#dbeafe;color:#1e40af">disetujuI</span>
+                                @elseif($lap->status_laporan == 'ditolak')
+                                    <span class="bk-badge" style="background:var(--danger-light);color:var(--danger)">ditolak</span>
                                 @else
                                     <span class="bk-badge" style="background:var(--surface-3);color:var(--ink-faint)">—</span>
                                 @endif
                             </td>
 
                             {{-- Aksi --}}
-                            <td style="padding:1rem 1.25rem;text-align:center">
+                            <td style="padding:0.75rem 1rem">
                                 @if($lap->postingan && $lap->status_laporan == 'pending')
-                                    <div style="display:flex;gap:0.5rem;justify-content:center;align-items:center">
+                                    <div style="display:flex;flex-direction:column;gap:0.35rem;align-items:stretch;min-width:140px">
                                         <form action="{{ route('admin.laporan.update', $lap->id) }}" method="POST"
                                               onsubmit="return confirm('Tolak laporan ini?')">
                                             @csrf @method('PUT')
-                                            <input type="hidden" name="status_laporan" value="tolak">
+                                            <input type="hidden" name="status_laporan" value="ditolak">
                                             <button type="submit" class="bk-btn bk-btn--ghost"
-                                                    style="font-size:0.78rem;padding:0.35rem 0.875rem;border:1px solid var(--border)">
+                                                    style="width:100%;font-size:0.78rem;padding:0.4rem 0.875rem;border:1px solid var(--border);justify-content:center">
                                                 Tolak
                                             </button>
                                         </form>
@@ -95,18 +95,13 @@
                                             <input type="hidden" name="status_laporan" value="disetujui">
                                             <input type="hidden" name="tipe" value="suspend">
                                             <button type="submit" class="bk-btn bk-btn--danger"
-                                                    style="font-size:0.78rem;padding:0.35rem 0.875rem;display:flex;align-items:center;gap:0.3rem">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
-                                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                    <circle cx="12" cy="12" r="10"/>
-                                                    <line x1="15" y1="9" x2="9" y2="15"/>
-                                                </svg>
-                                                Setujui & Suspend
+                                                    style="width:100%;font-size:0.78rem;padding:0.4rem 0.875rem;justify-content:center">
+                                                Setujui
                                             </button>
                                         </form>
                                     </div>
                                 @else
-                                    <span style="font-size:0.78rem;color:var(--ink-faint);font-style:italic">—</span>
+                                    <span style="font-size:0.78rem;color:var(--ink-faint);font-style:italic;display:block;text-align:center">—</span>
                                 @endif
                             </td>
                         </tr>

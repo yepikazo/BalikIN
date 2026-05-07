@@ -296,29 +296,73 @@
             {{-- Laporan Section (hanya untuk user lain yang sudah login) --}}
             @auth
                 @if (Auth::id() !== $postingan->user_id)
-                    <div style="padding:1.25rem 2rem;border-top:1px solid var(--border-subtle);background:var(--surface)">
-                        <details style="cursor:pointer">
-                            <summary
-                                style="font-size:0.78rem;color:var(--ink-faint);list-style:none;display:inline-flex;align-items:center;gap:0.4rem;user-select:none">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
-                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="12" y1="8" x2="12" y2="12" />
-                                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                                </svg>
-                                Laporkan postingan ini sebagai fiktif
-                            </summary>
-                            <form action="{{ route('laporan.store') }}" method="POST"
-                                style="margin-top:0.875rem;display:flex;gap:0.5rem;flex-wrap:wrap">
+                    <div style="padding:1.25rem 2rem;border-top:1px solid var(--border-subtle)">
+
+                        {{-- Pesan sukses / error khusus laporan --}}
+                        @if(session('success'))
+                            <div style="padding:0.75rem 1rem;background:var(--success-light);border:1px solid #b7e0c5;border-radius:var(--radius-md);display:flex;align-items:center;gap:0.5rem;color:var(--success);font-size:0.82rem;margin-bottom:0.875rem">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                {{ session('success') }}
+                            </div>
+                        @endif
+                        @if(session('error'))
+                            <div style="padding:0.75rem 1rem;background:var(--danger-light);border:1px solid #f5c0bc;border-radius:var(--radius-md);display:flex;align-items:center;gap:0.5rem;color:var(--danger);font-size:0.82rem;margin-bottom:0.875rem">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                {{ session('error') }}
+                            </div>
+                        @endif
+
+                        {{-- Toggle Button --}}
+                        <button id="btn-laporan-toggle"
+                                onclick="document.getElementById('panel-laporan').classList.toggle('hidden')"
+                                style="display:inline-flex;align-items:center;gap:0.4rem;font-size:0.78rem;color:var(--ink-faint);background:none;border:none;cursor:pointer;padding:0;font-family:var(--font-body);transition:color 0.15s"
+                                onmouseover="this.style.color='var(--danger)'"
+                                onmouseout="this.style.color='var(--ink-faint)'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+                                <line x1="4" y1="22" x2="4" y2="15"/>
+                            </svg>
+                            Laporkan postingan
+                        </button>
+
+                        {{-- Form Panel (hidden by default) --}}
+                        <div id="panel-laporan" class="hidden" style="margin-top:1rem;padding:1.25rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-md)">
+                            <div style="font-size:0.82rem;font-weight:700;color:var(--ink);margin-bottom:0.25rem">Kirim Laporan Fiktif</div>
+                            <p style="font-size:0.75rem;color:var(--ink-muted);margin-bottom:0.875rem;line-height:1.5">
+                                Jelaskan mengapa Anda menganggap postingan ini tidak valid atau palsu. Admin akan meninjau laporan Anda.
+                            </p>
+                            <form action="{{ route('laporan.store') }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="postingan_id" value="{{ $postingan->id }}">
-                                <input type="text" name="alasan" placeholder="Jelaskan alasan laporan..."
-                                    class="bk-input" style="flex:1;min-width:200px;font-size:0.82rem" required>
-                                <button type="submit" class="bk-btn bk-btn--danger"
-                                    style="white-space:nowrap;font-size:0.82rem">Kirim Laporan</button>
+                                <div style="margin-bottom:0.75rem">
+                                    <textarea name="alasan"
+                                              placeholder="Contoh: Foto barang ini adalah gambar dari internet, bukan barang asli..."
+                                              class="bk-input"
+                                              rows="3"
+                                              style="width:100%;resize:vertical;font-size:0.82rem;line-height:1.5"
+                                              required>{{ old('alasan') }}</textarea>
+                                    @error('alasan')
+                                        <div style="font-size:0.75rem;color:var(--danger);margin-top:0.3rem">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div style="display:flex;gap:0.5rem;justify-content:flex-end">
+                                    <button type="button"
+                                            onclick="document.getElementById('panel-laporan').classList.add('hidden')"
+                                            class="bk-btn bk-btn--ghost"
+                                            style="font-size:0.8rem">
+                                        Batal
+                                    </button>
+                                    <button type="submit" class="bk-btn bk-btn--danger" style="font-size:0.8rem">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+                                            <line x1="4" y1="22" x2="4" y2="15"/>
+                                        </svg>
+                                        Kirim Laporan
+                                    </button>
+                                </div>
                             </form>
-                        </details>
+                        </div>
+
                     </div>
                 @endif
             @endauth

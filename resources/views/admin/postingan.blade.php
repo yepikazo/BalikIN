@@ -14,7 +14,7 @@
         $totalDiamankan = $postingan->where('tipe','diamankan')->count();
         $totalSuspend   = $postingan->where('tipe','suspend')->count();
     @endphp
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:1rem;margin-bottom:1.5rem">
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;margin-bottom:1.5rem">
         @foreach([
             ['label'=>'Total','val'=>$totalAll,'color'=>'var(--accent)'],
             ['label'=>'Hilang','val'=>$totalHilang,'color'=>'var(--danger)'],
@@ -32,11 +32,11 @@
     {{-- Filter Bar --}}
     <div class="bk-card" style="padding:1rem 1.25rem;margin-bottom:1.25rem">
         <form method="GET" action="{{ route('admin.postingan.index') }}"
-              style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center">
+              style="display:flex;gap:0.75rem;align-items:center;width:100%">
             <input type="text" name="q" value="{{ request('q') }}"
                    placeholder="Cari nama barang atau pemilik..."
-                   class="bk-input" style="max-width:280px;font-size:0.875rem">
-            <select name="tipe" class="bk-input" style="max-width:160px;font-size:0.875rem">
+                   class="bk-input" style="flex:1;min-width:0;font-size:0.875rem">
+            <select name="tipe" class="bk-input" style="width:160px;flex-shrink:0;font-size:0.875rem">
                 <option value="">Semua Tipe</option>
                 @foreach(['hilang','ditemukan','diamankan','selesai','suspend'] as $t)
                     <option value="{{ $t }}" {{ request('tipe') === $t ? 'selected' : '' }}>
@@ -44,7 +44,7 @@
                     </option>
                 @endforeach
             </select>
-            <button type="submit" class="bk-btn bk-btn--primary" style="font-size:0.875rem">
+            <button type="submit" class="bk-btn bk-btn--primary" style="flex-shrink:0;font-size:0.875rem">
                 <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -52,7 +52,7 @@
                 Filter
             </button>
             @if(request()->anyFilled(['q','tipe']))
-                <a href="{{ route('admin.postingan.index') }}" class="bk-btn bk-btn--ghost" style="font-size:0.875rem">
+                <a href="{{ route('admin.postingan.index') }}" class="bk-btn bk-btn--ghost" style="flex-shrink:0;font-size:0.875rem">
                     Reset
                 </a>
             @endif
@@ -65,11 +65,11 @@
             <table style="width:100%;border-collapse:collapse;font-size:0.875rem">
                 <thead>
                     <tr style="background:var(--surface-2);border-bottom:1px solid var(--border)">
-                        <th style="padding:0.875rem 1.25rem;text-align:left;font-size:0.68rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);white-space:nowrap">Pemilik</th>
+                        <th style="padding:0.875rem 1.25rem;text-align:center;font-size:0.68rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);white-space:nowrap">Pemilik</th>
                         <th style="padding:0.875rem 1.25rem;text-align:left;font-size:0.68rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint)">Nama Postingan</th>
                         <th style="padding:0.875rem 1.25rem;text-align:left;font-size:0.68rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);white-space:nowrap">Tgl. Kejadian</th>
-                        <th style="padding:0.875rem 1.25rem;text-align:left;font-size:0.68rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint)">Tipe</th>
-                        <th style="padding:0.875rem 1.25rem;text-align:center;font-size:0.68rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);white-space:nowrap;min-width:280px">Ubah Tipe</th>
+                        <th style="padding:0.875rem 1.25rem;text-align:center;font-size:0.68rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint)">Status</th>
+                        <th style="padding:0.875rem 1.25rem;text-align:center;font-size:0.68rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);white-space:nowrap;width:160px">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -116,58 +116,58 @@
                             </td>
 
                             {{-- Tipe Badge --}}
-                            <td style="padding:1rem 1.25rem">
+                            <td style="padding:1rem 1.25rem;text-align:center">
                                 <span class="bk-badge bk-badge--{{ $post->tipe }}">{{ $post->tipe }}</span>
                             </td>
 
                             {{-- Aksi Ubah Tipe --}}
-                            <td style="padding:0.75rem 1.25rem;text-align:center">
-                                <div style="display:flex;gap:0.35rem;justify-content:center;flex-wrap:wrap">
+                            <td style="padding:0.75rem 1rem">
+                                <div style="display:flex;flex-direction:column;gap:0.35rem;align-items:stretch;min-width:130px">
 
-                                    @if($post->tipe !== 'diamankan')
+                                    @if($post->tipe !== 'diamankan' && $post->tipe !== 'selesai' && $post->tipe !== 'suspend')
                                         <form action="{{ route('admin.postingan.updateTipe', $post->id) }}" method="POST"
                                               onsubmit="return confirm('Tandai postingan ini sebagai Diamankan? Chat akan diarahkan ke admin.')">
                                             @csrf @method('PUT')
                                             <input type="hidden" name="tipe" value="diamankan">
-                                            <button type="submit" class="bk-btn"
-                                                    style="font-size:0.72rem;padding:0.3rem 0.65rem;background:#dbeafe;color:#1e40af;border:1px solid #bfdbfe;font-weight:600">
-                                                🔒 Diamankan
+                                            <button type="submit" class="bk-btn" style="width:100%;font-size:0.75rem;padding:0.35rem 0.6rem;background:#dbeafe;color:#1e40af;border:1px solid #bfdbfe;font-weight:600;justify-content:center">
+                                                Amankan
                                             </button>
                                         </form>
                                     @endif
 
-                                    @if($post->tipe !== 'selesai')
+                                    @if($post->tipe !== 'selesai' && $post->tipe !== 'suspend')
                                         <form action="{{ route('admin.postingan.updateTipe', $post->id) }}" method="POST"
                                               onsubmit="return confirm('Tandai postingan ini sebagai Selesai?')">
                                             @csrf @method('PUT')
                                             <input type="hidden" name="tipe" value="selesai">
-                                            <button type="submit" class="bk-btn"
-                                                    style="font-size:0.72rem;padding:0.3rem 0.65rem;background:var(--success-light);color:var(--success);border:1px solid #b7e0c5;font-weight:600">
-                                                ✅ Selesai
+                                            <button type="submit" class="bk-btn" style="width:100%;font-size:0.75rem;padding:0.35rem 0.6rem;background:var(--success-light);color:var(--success);border:1px solid #b7e0c5;font-weight:600;justify-content:center">
+                                                Selesaikan
                                             </button>
                                         </form>
                                     @endif
 
-                                    @if($post->tipe !== 'suspend')
+                                    @if($post->tipe !== 'suspend' && $post->tipe !== 'diamankan' && $post->tipe !== 'selesai')
                                         <form action="{{ route('admin.postingan.updateTipe', $post->id) }}" method="POST"
                                               onsubmit="return confirm('Suspend postingan ini? Tidak akan muncul di beranda.')">
                                             @csrf @method('PUT')
                                             <input type="hidden" name="tipe" value="suspend">
-                                            <button type="submit" class="bk-btn bk-btn--danger"
-                                                    style="font-size:0.72rem;padding:0.3rem 0.65rem;font-weight:600">
-                                                🚫 Suspend
+                                            <button type="submit" class="bk-btn bk-btn--danger" style="width:100%;font-size:0.75rem;padding:0.35rem 0.6rem;font-weight:600;justify-content:center">
+                                                Suspend
                                             </button>
                                         </form>
                                     @endif
 
-                                    @if(in_array($post->tipe, ['diamankan','selesai','suspend']))
+                                    @if($post->tipe == 'suspend')
+                                        @php
+                                            $tipePulih = $post->tipe_sebelumnya ?? 'hilang';
+                                        @endphp
                                         <form action="{{ route('admin.postingan.updateTipe', $post->id) }}" method="POST"
-                                              onsubmit="return confirm('Kembalikan ke status Hilang?')">
+                                              onsubmit="return confirm('Aktifkan kembali postingan ini? Tipe akan dikembalikan ke: {{ $tipePulih }}.')">
                                             @csrf @method('PUT')
-                                            <input type="hidden" name="tipe" value="hilang">
-                                            <button type="submit" class="bk-btn bk-btn--ghost"
-                                                    style="font-size:0.72rem;padding:0.3rem 0.65rem;font-weight:600">
-                                                ↩ Aktifkan
+                                            <input type="hidden" name="tipe" value="restore">
+                                            <button type="submit" class="bk-btn bk-btn--ghost" style="width:100%;font-size:0.75rem;padding:0.35rem 0.6rem;font-weight:600;justify-content:center">
+                                                Aktifkan
+                                                {{-- <span style="font-size:0.65rem;opacity:0.7;display:block;font-weight:400;margin-top:1px">→ {{ $tipePulih }}</span> --}}
                                             </button>
                                         </form>
                                     @endif

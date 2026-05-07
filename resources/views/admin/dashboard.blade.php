@@ -7,7 +7,7 @@
     <h1 style="font-size:1.75rem;font-weight:800;letter-spacing:-0.03em;color:var(--ink);margin-bottom:0.35rem">Panel Admin</h1>
     <p style="font-size:0.9rem;color:var(--ink-muted);margin-bottom:2rem">Ringkasan aktivitas dan manajemen aplikasi Balik.in</p>
 
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:1.25rem;margin-bottom:2rem">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;margin-bottom:2rem">
         <div class="bk-card" style="padding:1.5rem;border-left:4px solid var(--accent)">
             <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:0.5rem">Total Postingan</div>
             <div style="font-size:2.25rem;font-weight:800;color:var(--ink);line-height:1">{{ $totalPostingan }}</div>
@@ -33,8 +33,9 @@
     {{-- Quick Actions --}}
     <div class="bk-card" style="padding:2rem;margin-bottom:1.5rem">
         <h2 style="font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:1.25rem;letter-spacing:-0.01em">Aksi Cepat</h2>
-        <div style="display:flex;flex-wrap:wrap;gap:0.75rem">
-            <a href="{{ route('admin.postingan.index') }}" class="bk-btn bk-btn--primary" style="gap:0.5rem">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem">
+            <a href="{{ route('admin.postingan.index') }}" class="bk-btn bk-btn--primary"
+               style="justify-content:center;gap:0.5rem;padding:0.75rem 1rem">
                 <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -44,7 +45,8 @@
                 </svg>
                 Kelola Postingan
             </a>
-            <a href="{{ route('admin.laporan') }}" class="bk-btn bk-btn--danger" style="gap:0.5rem">
+            <a href="{{ route('admin.laporan') }}" class="bk-btn bk-btn--danger"
+               style="justify-content:center;gap:0.5rem;padding:0.75rem 1rem">
                 <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
@@ -56,7 +58,8 @@
                     <span style="background:white;color:var(--danger);border-radius:var(--radius-full);font-size:0.7rem;font-weight:700;padding:1px 7px;min-width:20px;text-align:center">{{ $laporanPending }}</span>
                 @endif
             </a>
-            <a href="{{ route('beranda') }}" class="bk-btn bk-btn--ghost" target="_blank">
+            <a href="{{ route('beranda') }}" class="bk-btn bk-btn--ghost" target="_blank"
+               style="justify-content:center;gap:0.5rem;padding:0.75rem 1rem">
                 <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>

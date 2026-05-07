@@ -32,6 +32,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan-saya', [LaporanController::class, 'index'])->name('laporan.index');
     Route::post('/laporan', [LaporanController::class, 'store'])->name('laporan.store');
 
+    // --- Postingan Saya ---
+    Route::get('/postingan-saya', [PostinganController::class, 'myPosts'])->name('postingan.saya');
+
     // --- Pesan (Chat Pribadi) ---
     Route::get('/pesan', [MessageController::class, 'index'])->name('pesan.index');
     Route::get('/pesan/{userId}', [MessageController::class, 'show'])->name('pesan.show');

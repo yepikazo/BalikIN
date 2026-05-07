@@ -14,6 +14,7 @@ class Postingan extends Model
     protected $fillable = [
         'user_id',
         'tipe',
+        'tipe_sebelumnya',
         'nama_barang',
         'kategori',
         'lokasi',
