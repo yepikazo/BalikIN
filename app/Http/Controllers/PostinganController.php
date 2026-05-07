@@ -12,10 +12,10 @@ class PostinganController extends Controller
     // 1. Menampilkan semua postingan (Halaman Beranda)
     public function index(Request $request)
     {
-        $query = Postingan::with('user')->latest();
+        $query = Postingan::with('user')->where('status', 'aktif')->latest();
 
         // Filter berdasarkan tipe (hilang/ditemukan)
-        if ($request->filled('tipe') && in_array($request->tipe, ['hilang', 'ditemukan'])) {
+        if ($request->filled('tipe') && in_array($request->tipe, ['hilang', 'ditemukan', 'diamankan'])) {
             $query->where('tipe', $request->tipe);
         }
 

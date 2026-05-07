@@ -69,9 +69,6 @@ use App\Http\Controllers\OAuthController;
 
 Route::get('/auth/google',           [OAuthController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback',  [OAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
-Route::get('/auth/github',           [OAuthController::class, 'redirectToGithub'])->name('auth.github');
-Route::get('/auth/github/callback',  [OAuthController::class, 'handleGithubCallback'])->name('auth.github.callback');
-
 
 // ===========================
 // API (JSON — untuk Chat Panel Floating)

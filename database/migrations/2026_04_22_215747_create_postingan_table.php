@@ -17,7 +17,7 @@ return new class extends Migration
             // Relasi ke tabel users
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
 
-            $table->enum('tipe', ['hilang', 'ditemukan']);
+            $table->enum('tipe', ['hilang', 'ditemukan', 'diamankan']);
             $table->string('nama_barang');
             $table->string('kategori');
             $table->string('lokasi');
