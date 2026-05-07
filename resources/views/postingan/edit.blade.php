@@ -43,10 +43,10 @@
                         <label class="bk-label">Tipe Laporan</label>
                         <select name="tipe" class="bk-input" required>
                             <option value="hilang" {{ old('tipe', $postingan->tipe) == 'hilang' ? 'selected' : '' }}>
-                                Saya Kehilangan Barang
+                                Kehilangan Barang
                             </option>
                             <option value="ditemukan" {{ old('tipe', $postingan->tipe) == 'ditemukan' ? 'selected' : '' }}>
-                                Saya Menemukan Barang
+                                Menemukan Barang
                             </option>
                         </select>
                     </div>

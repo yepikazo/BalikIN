@@ -15,8 +15,8 @@
                     <div>
                         <label class="bk-label">Tipe Laporan</label>
                         <select name="tipe" class="bk-input" required>
-                            <option value="hilang" {{ old('tipe') == 'hilang' ? 'selected' : '' }}>Saya Kehilangan Barang</option>
-                            <option value="ditemukan" {{ old('tipe') == 'ditemukan' ? 'selected' : '' }}>Saya Menemukan Barang</option>
+                            <option value="hilang" {{ old('tipe') == 'hilang' ? 'selected' : '' }}>Kehilangan Barang</option>
+                            <option value="ditemukan" {{ old('tipe') == 'ditemukan' ? 'selected' : '' }}>Menemukan Barang</option>
                         </select>
                     </div>
                     <div>
