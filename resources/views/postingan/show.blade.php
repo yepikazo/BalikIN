@@ -200,26 +200,28 @@
                                         <p style="font-size:0.8rem;color:#1e40af;line-height:1.5;margin-bottom:1rem">
                                             Barang ini telah diamankan oleh admin. Hubungi admin untuk informasi lebih lanjut mengenai proses pengambilan.
                                         </p>
-                                        @if($adminUser)
-                                            <button id="btn-hubungi"
-                                                onclick="openChatWith({{ $adminUser->id }}, '{{ addslashes($adminUser->name) }}', '{{ addslashes($postingan->nama_barang) }}')"
-                                                style="width:100%;padding:0.7rem 1rem;background:#1e40af;color:white;border:none;border-radius:var(--radius-md);font-size:0.875rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;transition:all 0.2s;font-family:var(--font-body)"
-                                                onmouseover="this.style.background='#1e3a8a';this.style.transform='translateY(-1px)'"
-                                                onmouseout="this.style.background='#1e40af';this.style.transform=''">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15"
-                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                                                </svg>
-                                                Hubungi Admin
-                                            </button>
-                                            <p style="font-size:0.72rem;color:#3b82f6;text-align:center;margin-top:0.5rem">
-                                                Chat dengan admin Balik.in
-                                            </p>
-                                        @else
-                                            <p style="font-size:0.82rem;color:#1e40af;text-align:center;font-style:italic">
-                                                Hubungi admin melalui halaman Pesan.
-                                            </p>
+                                        @if(!Auth::user()->is_admin)
+                                            @if($adminUser)
+                                                <button id="btn-hubungi"
+                                                    onclick="openChatWith({{ $adminUser->id }}, '{{ addslashes($adminUser->name) }}', '{{ addslashes($postingan->nama_barang) }}')"
+                                                    style="width:100%;padding:0.7rem 1rem;background:#1e40af;color:white;border:none;border-radius:var(--radius-md);font-size:0.875rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;transition:all 0.2s;font-family:var(--font-body)"
+                                                    onmouseover="this.style.background='#1e3a8a';this.style.transform='translateY(-1px)'"
+                                                    onmouseout="this.style.background='#1e40af';this.style.transform=''">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15"
+                                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                                    </svg>
+                                                    Hubungi Admin
+                                                </button>
+                                                <p style="font-size:0.72rem;color:#3b82f6;text-align:center;margin-top:0.5rem">
+                                                    Chat dengan admin Balik.in
+                                                </p>
+                                            @else
+                                                <p style="font-size:0.82rem;color:#1e40af;text-align:center;font-style:italic">
+                                                    Hubungi admin melalui halaman Pesan.
+                                                </p>
+                                            @endif
                                         @endif
                                     </div>
 
