@@ -51,7 +51,7 @@
                     </div>
 
                     @auth
-                        @if (Auth::id() === $postingan->user_id || Auth::user()->is_admin)
+                        @if (Auth::user()->is_admin || (Auth::id() === $postingan->user_id && $postingan->tipe !== 'diamankan'))
                             <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
                                 <a href="{{ route('postingan.edit', $postingan->id) }}" class="bk-btn bk-btn--ghost"
                                     style="font-size:0.82rem">
@@ -260,15 +260,19 @@
                                 {{-- Pemilik sendiri --}}
                                 <div style="background:var(--surface-2);border:1px dashed var(--border);border-radius:var(--radius-md);padding:1rem;text-align:center">
                                     <p style="font-size:0.82rem;color:var(--ink-muted)">Ini adalah postingan Anda sendiri.</p>
-                                    <a href="{{ route('postingan.edit', $postingan->id) }}"
-                                       style="display:inline-flex;align-items:center;gap:0.4rem;margin-top:0.625rem;font-size:0.8rem;color:var(--accent-dark);font-weight:600">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                                        </svg>
-                                        Edit Postingan
-                                    </a>
+                                    @if ($postingan->tipe !== 'diamankan' || Auth::user()->is_admin)
+                                        <a href="{{ route('postingan.edit', $postingan->id) }}"
+                                           style="display:inline-flex;align-items:center;gap:0.4rem;margin-top:0.625rem;font-size:0.8rem;color:var(--accent-dark);font-weight:600">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                            </svg>
+                                            Edit Postingan
+                                        </a>
+                                    @else
+                                        <p style="font-size:0.75rem;color:var(--danger);margin-top:0.5rem">Postingan sedang diamankan dan tidak dapat diedit.</p>
+                                    @endif
                                 </div>
                             @endif
                         @else

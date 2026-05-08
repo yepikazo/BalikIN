@@ -97,6 +97,10 @@ class PostinganController extends Controller
             return redirect()->route('beranda')->with('error', 'Anda tidak berhak mengedit postingan ini.');
         }
 
+        if ($postingan->tipe === 'diamankan' && !Auth::user()->is_admin) {
+            return redirect()->route('beranda')->with('error', 'Postingan ini sedang diamankan oleh admin dan tidak dapat diedit.');
+        }
+
         return view('postingan.edit', compact('postingan'));
     }
 
@@ -108,6 +112,10 @@ class PostinganController extends Controller
         // Pengecekan keamanan ulang
         if (Auth::id() !== $postingan->user_id && !Auth::user()->is_admin) {
             return redirect()->route('beranda')->with('error', 'Akses ditolak.');
+        }
+
+        if ($postingan->tipe === 'diamankan' && !Auth::user()->is_admin) {
+            return redirect()->route('beranda')->with('error', 'Postingan ini sedang diamankan oleh admin dan tidak dapat diedit.');
         }
 
         $validated = $request->validate([
@@ -144,6 +152,10 @@ class PostinganController extends Controller
         // Pengecekan keamanan: Hanya pemilik atau admin yang bisa hapus
         if (Auth::id() !== $postingan->user_id && !Auth::user()->is_admin) {
             return redirect()->route('beranda')->with('error', 'Akses ditolak.');
+        }
+
+        if ($postingan->tipe === 'diamankan' && !Auth::user()->is_admin) {
+            return redirect()->route('beranda')->with('error', 'Postingan ini sedang diamankan oleh admin dan tidak dapat dihapus.');
         }
 
         // Hapus file foto fisik dari folder storage sebelum menghapus data dari database
