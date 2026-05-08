@@ -22,8 +22,11 @@
                     value="{{ request('q') }}"
                     placeholder="Cari nama barang, lokasi, deskripsi..."
                     class="bk-input"
-                    style="padding-left:2.4rem"
+                    style="padding-left:2.4rem; padding-right:5.5rem; width:100%"
                 >
+                <button type="submit" class="bk-btn bk-btn--primary" style="position:absolute;right:0.35rem;top:0.35rem;bottom:0.35rem;padding:0 1rem;font-size:0.8rem;min-height:unset;height:auto;border-radius:4px">
+                    Cari
+                </button>
             </div>
 
             {{-- Filter Kategori --}}
@@ -39,13 +42,10 @@
                 <button type="submit" name="tipe" value="" class="bk-btn bk-btn--ghost filter-tipe-btn {{ !request('tipe') ? 'active-filter' : '' }}">Semua</button>
                 <button type="submit" name="tipe" value="hilang" class="bk-btn bk-btn--ghost filter-tipe-btn {{ request('tipe') === 'hilang' ? 'active-filter' : '' }}" style="{{ request('tipe') !== 'hilang' ? 'color:var(--danger)' : '' }}">Hilang</button>
                 <button type="submit" name="tipe" value="ditemukan" class="bk-btn bk-btn--ghost filter-tipe-btn {{ request('tipe') === 'ditemukan' ? 'active-filter' : '' }}" style="{{ request('tipe') !== 'ditemukan' ? 'color:var(--success)' : '' }}">Ditemukan</button>
+                <button type="submit" name="tipe" value="diamankan" class="bk-btn bk-btn--ghost filter-tipe-btn {{ request('tipe') === 'diamankan' ? 'active-filter' : '' }}" style="{{ request('tipe') !== 'diamankan' ? 'color:#1e40af' : '' }}">Diamankan</button>
             </div>
 
-            {{-- Tombol Search --}}
-            <button type="submit" class="bk-btn bk-btn--primary">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                Cari
-            </button>
+
 
             @if(request('q') || request('tipe') || request('kategori'))
                 <a href="{{ route('beranda') }}" class="bk-btn bk-btn--ghost" style="color:var(--ink-faint)">

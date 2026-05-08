@@ -409,6 +409,11 @@
             color: var(--success);
         }
 
+        .bk-badge--diamankan {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
         .bk-badge--aktif {
             background: var(--success-light);
             color: var(--success);

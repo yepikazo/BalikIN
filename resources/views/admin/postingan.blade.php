@@ -33,10 +33,18 @@
     <div class="bk-card" style="padding:1rem 1.25rem;margin-bottom:1.25rem">
         <form method="GET" action="{{ route('admin.postingan.index') }}"
               style="display:flex;gap:0.75rem;align-items:center;width:100%">
-            <input type="text" name="q" value="{{ request('q') }}"
-                   placeholder="Cari nama barang atau pemilik..."
-                   class="bk-input" style="flex:1;min-width:0;font-size:0.875rem">
-            <select name="tipe" class="bk-input" style="width:160px;flex-shrink:0;font-size:0.875rem">
+            <div style="flex:1;min-width:0;position:relative">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink-faint)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);pointer-events:none">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <input type="text" name="q" value="{{ request('q') }}"
+                       placeholder="Cari nama barang atau pemilik..."
+                       class="bk-input" style="width:100%;font-size:0.875rem;padding-left:2.4rem;padding-right:5.5rem">
+                <button type="submit" class="bk-btn bk-btn--primary" style="position:absolute;right:0.35rem;top:0.35rem;bottom:0.35rem;padding:0 1rem;font-size:0.8rem;min-height:unset;height:auto;border-radius:4px">
+                    Cari
+                </button>
+            </div>
+            <select name="tipe" class="bk-input" style="width:160px;flex-shrink:0;font-size:0.875rem" onchange="this.form.submit()">
                 <option value="">Semua Tipe</option>
                 @foreach(['hilang','ditemukan','diamankan','selesai','suspend'] as $t)
                     <option value="{{ $t }}" {{ request('tipe') === $t ? 'selected' : '' }}>
@@ -44,13 +52,6 @@
                     </option>
                 @endforeach
             </select>
-            <button type="submit" class="bk-btn bk-btn--primary" style="flex-shrink:0;font-size:0.875rem">
-                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                </svg>
-                Filter
-            </button>
             @if(request()->anyFilled(['q','tipe']))
                 <a href="{{ route('admin.postingan.index') }}" class="bk-btn bk-btn--ghost" style="flex-shrink:0;font-size:0.875rem">
                     Reset

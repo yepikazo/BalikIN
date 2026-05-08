@@ -14,7 +14,7 @@ class PostinganFactory extends Factory
 
         return [
             'user_id' => User::factory(), // Default jika tidak diset di seeder
-            'tipe' => fake()->randomElement(['hilang', 'ditemukan']),
+            'tipe' => fake()->randomElement(['hilang', 'ditemukan', 'diamankan']),
             'nama_barang' => fake()->randomElement(['Dompet Hitam', 'Kunci Motor Honda', 'HP iPhone 12', 'KTM Mahasiswa', 'Laptop Asus', 'Botol Minum Tupperware']),
             'kategori' => fake()->randomElement(['Elektronik', 'Dokumen/Kartu', 'Aksesoris', 'Lainnya']),
             'lokasi' => fake()->streetAddress() . ', ' . fake()->city(),
