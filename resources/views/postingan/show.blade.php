@@ -273,7 +273,24 @@
                                             Edit Postingan
                                         </a>
                                     @else
-                                        <p style="font-size:0.75rem;color:var(--danger);margin-top:0.5rem">Postingan sedang diamankan dan tidak dapat diedit.</p>
+                                        <p style="font-size:0.8rem;color:var(--danger);margin-top:0.5rem;margin-bottom:1rem">Postingan sedang diamankan oleh admin dan tidak dapat diedit.</p>
+                                        @php
+                                            $adminUser = \App\Models\User::where('is_admin', true)->first();
+                                        @endphp
+                                        @if($adminUser)
+                                            <button id="btn-hubungi-admin-pemilik"
+                                                onclick="openChatWith({{ $adminUser->id }}, '{{ addslashes($adminUser->name) }}', '{{ addslashes($postingan->nama_barang) }}')"
+                                                style="width:100%;padding:0.7rem 1rem;background:#1e40af;color:white;border:none;border-radius:var(--radius-md);font-size:0.875rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;transition:all 0.2s;font-family:var(--font-body)"
+                                                onmouseover="this.style.background='#1e3a8a';this.style.transform='translateY(-1px)'"
+                                                onmouseout="this.style.background='#1e40af';this.style.transform=''">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15"
+                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                                </svg>
+                                                Hubungi Admin
+                                            </button>
+                                        @endif
                                     @endif
                                 </div>
                             @endif
