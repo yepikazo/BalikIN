@@ -1,33 +1,65 @@
 @props(['post'])
 
-<div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200 hover:shadow-xl transition">
-    <div class="relative">
+<div class="bk-card" style="display:flex;flex-direction:column;position:relative;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s"
+     onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-md)'"
+     onmouseout="this.style.transform='';this.style.boxShadow=''">
+    {{-- Overlay link: seluruh card klik ke detail --}}
+    <a href="{{ route('postingan.show', $post->id) }}"
+       style="position:absolute;inset:0;z-index:0"
+       aria-label="Lihat detail {{ $post->nama_barang }}"></a>
+
+    {{-- Foto --}}
+    <div style="position:relative;overflow:hidden;flex-shrink:0">
         @if($post->foto)
-            <img class="h-48 w-full object-cover" src="{{ asset('storage/'.$post->foto) }}" alt="{{ $post->nama_barang }}">
+            <img style="width:100%;height:180px;object-fit:cover;display:block" src="{{ asset('storage/'.$post->foto) }}" alt="{{ $post->nama_barang }}">
         @else
-            <div class="h-48 w-full bg-gray-200 flex items-center justify-center text-gray-400">Tidak ada foto</div>
+            <div style="width:100%;height:180px;background:var(--surface-2);display:flex;align-items:center;justify-content:center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--surface-3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            </div>
         @endif
-        
-        <span class="absolute top-2 right-2 px-3 py-1 rounded-full text-xs font-bold uppercase {{ $post->tipe == 'hilang' ? 'bg-red-500 text-white' : 'bg-green-500 text-white' }}">
+        <span style="position:absolute;top:10px;left:10px;z-index:1" class="bk-badge bk-badge--{{ $post->tipe }}">
             {{ $post->tipe }}
         </span>
     </div>
-    
-    <div class="p-5">
-        <div class="text-sm text-blue-600 font-semibold uppercase tracking-wide">{{ $post->kategori }}</div>
-        <a href="{{ route('postingan.show', $post->id) }}" class="block mt-1 text-lg leading-tight font-bold text-black hover:underline">
+
+    {{-- Content --}}
+    <div style="padding:1rem;flex:1;display:flex;flex-direction:column;gap:0.5rem">
+        <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent)">{{ $post->kategori }}</div>
+        <div style="font-size:1rem;font-weight:700;color:var(--ink);letter-spacing:-0.01em;line-height:1.3">
             {{ $post->nama_barang }}
-        </a>
-        <p class="mt-2 text-gray-600 text-sm line-clamp-2">{{ $post->deskripsi }}</p>
-        
-        <div class="mt-4 flex items-center text-gray-500 text-xs">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+        </div>
+        <p style="font-size:0.8rem;color:var(--ink-muted);line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;flex:1">{{ $post->deskripsi }}</p>
+
+        <div style="display:flex;align-items:center;gap:0.3rem;font-size:0.75rem;color:var(--ink-faint);margin-top:auto">
+            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
             {{ $post->lokasi }}
         </div>
-        
-        <div class="mt-4 pt-4 border-t flex justify-between items-center">
-            <span class="text-xs text-gray-400">{{ $post->created_at->diffForHumans() }}</span>
-            <a href="{{ route('postingan.show', $post->id) }}" class="text-blue-600 font-bold text-sm">Detail &rarr;</a>
+
+        {{-- Footer --}}
+        <div style="padding-top:0.875rem;border-top:1px solid var(--border-subtle);display:flex;justify-content:space-between;align-items:center;gap:0.5rem;margin-top:0.25rem">
+            <span style="font-size:0.72rem;color:var(--ink-faint)">{{ $post->created_at->diffForHumans() }}</span>
+
+            <div style="display:flex;align-items:center;gap:0.4rem;position:relative;z-index:1">
+                {{-- Tombol Hubungi (hanya jika sudah login dan bukan pemilik) --}}
+                @auth
+                    @if(Auth::id() !== $post->user_id && $post->status !== 'selesai')
+                        <button
+                            onclick="event.preventDefault();openChatWith({{ $post->user_id }}, '{{ addslashes($post->user->name) }}', '{{ addslashes($post->nama_barang) }}')"
+                            title="Hubungi {{ $post->user->name }}"
+                            style="width:30px;height:30px;border-radius:var(--radius-full);background:var(--accent-light);border:1px solid rgba(200,146,42,0.3);color:var(--accent-dark);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;flex-shrink:0"
+                            onmouseover="this.style.background='var(--accent)';this.style.color='white'"
+                            onmouseout="this.style.background='var(--accent-light)';this.style.color='var(--accent-dark)'"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        </button>
+                    @endif
+                @endauth
+
+                {{-- <span style="font-size:0.78rem;font-weight:600;color:var(--accent);display:flex;align-items:center;gap:0.2rem">
+                    Lihat
+                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </span> --}}
+            </div>
         </div>
     </div>
 </div>

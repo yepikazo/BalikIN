@@ -12,7 +12,8 @@ class LaporanFactory extends Factory
         return [
             'alasan' => fake()->randomElement(['Postingan palsu / Spam', 'Barang bukan milik pelapor', 'Konten tidak pantas', 'Penipuan hadiah']),
             'tanggal_laporan' => fake()->dateTimeBetween('-1 weeks', 'now'),
-            'status_laporan' => fake()->randomElement(['pending', 'diproses', 'selesai']),
+            'status_laporan' => 'pending',
+            // 'status_laporan' => fake()->randomElement(['pending', 'disetujui', 'tolak'])
         ];
     }
 }

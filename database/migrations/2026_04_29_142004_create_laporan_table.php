@@ -25,7 +25,7 @@ return new class extends Migration
             
             $table->text('alasan');
             $table->date('tanggal_laporan');
-            $table->enum('status_laporan', ['pending', 'diproses', 'selesai'])->default('pending');
+            $table->enum('status_laporan', ['pending', 'disetujui', 'ditolak'])->default('pending');
             
             $table->timestamps();
         });

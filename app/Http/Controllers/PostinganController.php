@@ -12,12 +12,34 @@ class PostinganController extends Controller
     // 1. Menampilkan semua postingan (Halaman Beranda)
     public function index(Request $request)
     {
-        // Mengambil data postingan terbaru beserta data user pembuatnya
-        // Nanti Anda bisa menambahkan logika filter di sini (misal filter berdasarkan $request->kategori)
-        $postingan = Postingan::with('user')->latest()->get();
-        
-        // Memanggil komponen view postingan/index.blade.php
-        return view('postingan.index', compact('postingan')); 
+        $query = Postingan::with('user')->whereNotIn('tipe', ['suspend', 'selesai'])->latest();
+
+        // Filter berdasarkan tipe (hilang/ditemukan)
+        if ($request->filled('tipe') && in_array($request->tipe, ['hilang', 'ditemukan', 'diamankan'])) {
+            $query->where('tipe', $request->tipe);
+        }
+
+        // Filter berdasarkan kategori
+        if ($request->filled('kategori')) {
+            $query->where('kategori', $request->kategori);
+        }
+
+        // Search berdasarkan nama_barang, deskripsi, atau lokasi
+        if ($request->filled('q')) {
+            $search = $request->q;
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_barang', 'like', "%{$search}%")
+                  ->orWhere('deskripsi', 'like', "%{$search}%")
+                  ->orWhere('lokasi', 'like', "%{$search}%");
+            });
+        }
+
+        $postingan = $query->get();
+
+        // Ambil semua kategori unik untuk dropdown filter
+        $kategoriList = Postingan::select('kategori')->distinct()->orderBy('kategori')->pluck('kategori');
+
+        return view('postingan.index', compact('postingan', 'kategoriList'));
     }
 
     // 2. Menampilkan form tambah postingan
@@ -47,7 +69,7 @@ class PostinganController extends Controller
 
         // Otomatis tambahkan ID user yang sedang login dan status default
         $validated['user_id'] = Auth::id();
-        $validated['status'] = 'aktif';
+        // $validated['status'] = 'aktif';
 
         Postingan::create($validated);
 
@@ -89,14 +111,13 @@ class PostinganController extends Controller
         }
 
         $validated = $request->validate([
-            'tipe' => 'required|in:hilang,ditemukan',
-            'nama_barang' => 'required|string|max:255',
-            'kategori' => 'required|string|max:255',
-            'lokasi' => 'required|string|max:255',
+            'tipe'           => 'required|in:hilang,ditemukan',
+            'nama_barang'    => 'required|string|max:255',
+            'kategori'       => 'required|string|max:255',
+            'lokasi'         => 'required|string|max:255',
             'waktu_kejadian' => 'required|date',
-            'deskripsi' => 'required|string',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'status' => 'required|in:aktif,selesai',
+            'deskripsi'      => 'required|string',
+            'foto'           => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         // Proses ganti foto jika ada foto baru yang diunggah
@@ -133,5 +154,16 @@ class PostinganController extends Controller
         $postingan->delete();
 
         return redirect()->route('beranda')->with('success', 'Postingan berhasil dihapus.');
+    }
+
+    // 8. Menampilkan postingan milik user yang sedang login
+    public function myPosts()
+    {
+        $postingan = Postingan::with('user')
+            ->where('user_id', Auth::id())
+            ->latest()
+            ->get();
+
+        return view('postingan.saya', compact('postingan'));
     }
 }

@@ -14,13 +14,14 @@ class Postingan extends Model
     protected $fillable = [
         'user_id',
         'tipe',
+        'tipe_sebelumnya',
         'nama_barang',
         'kategori',
         'lokasi',
         'waktu_kejadian',
         'deskripsi',
         'foto',
-        'status',
+        // 'status',
     ];
 
     // Relasi ke User (Pembuat Postingan)
