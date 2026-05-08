@@ -55,13 +55,13 @@
                 <div style="flex:1;min-width:0">
                     <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.4rem">
                         <span class="bk-badge bk-badge--{{ $post->tipe }}">{{ $post->tipe }}</span>
-                        @if($post->tipe === 'diamankan')
-                            <span class="bk-badge" style="background:#dbeafe;color:#1e40af">Diamankan</span>
-                        @elseif($post->tipe === 'selesai')
+                        {{-- @if($post->tipe === 'diamankan')
+                            <span class="bk-badge" style="background:#dbeafe;color:#1e40af">Diamankan</span> --}}
+                        {{-- {{-- @if($post->tipe === 'selesai')
                             <span class="bk-badge" style="background:var(--success-light);color:var(--success)">Selesai</span>
                         @elseif($post->tipe === 'suspend')
                             <span class="bk-badge" style="background:var(--danger-light);color:var(--danger)">Suspend</span>
-                        @endif
+                        @endif --}}
                     </div>
                     <a href="{{ route('postingan.show', $post->id) }}"
                        style="font-size:1rem;font-weight:700;color:var(--ink);letter-spacing:-0.01em;display:block;margin-bottom:0.25rem"
@@ -102,6 +102,7 @@
                                 Hapus
                             </button>
                         </form>
+                    
                     @endif
                 </div>
 

@@ -51,14 +51,19 @@ class PostinganController extends Controller
     // 3. Menyimpan postingan baru ke database
     public function store(Request $request)
     {
+        // Admin boleh memilih tipe 'diamankan', user biasa hanya hilang/ditemukan
+        $allowedTipe = Auth::user()->is_admin
+            ? 'required|in:hilang,ditemukan,diamankan'
+            : 'required|in:hilang,ditemukan';
+
         $validated = $request->validate([
-            'tipe' => 'required|in:hilang,ditemukan',
-            'nama_barang' => 'required|string|max:255',
-            'kategori' => 'required|string|max:255',
-            'lokasi' => 'required|string|max:255',
+            'tipe'           => $allowedTipe,
+            'nama_barang'    => 'required|string|max:255',
+            'kategori'       => 'required|string|max:255',
+            'lokasi'         => 'required|string|max:255',
             'waktu_kejadian' => 'required|date',
-            'deskripsi' => 'required|string',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Maksimal 2MB
+            'deskripsi'      => 'required|string',
+            'foto'           => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         // Proses upload foto jika user melampirkan foto
@@ -69,9 +74,14 @@ class PostinganController extends Controller
 
         // Otomatis tambahkan ID user yang sedang login dan status default
         $validated['user_id'] = Auth::id();
-        // $validated['status'] = 'aktif';
 
-        Postingan::create($validated);
+        $postingan = Postingan::create($validated);
+
+        // Smart redirect: kembali ke asal jika ada redirect_back (misal admin)
+        $redirectBack = $request->input('redirect_back');
+        if ($redirectBack && Auth::user()->is_admin) {
+            return redirect($redirectBack)->with('success', 'Postingan berhasil dibuat!');
+        }
 
         return redirect()->route('beranda')->with('success', 'Postingan berhasil dibuat!');
     }
@@ -118,8 +128,13 @@ class PostinganController extends Controller
             return redirect()->route('beranda')->with('error', 'Postingan ini sedang diamankan oleh admin dan tidak dapat diedit.');
         }
 
+        // Admin boleh memilih tipe 'diamankan', user biasa hanya hilang/ditemukan
+        $allowedTipe = Auth::user()->is_admin
+            ? 'required|in:hilang,ditemukan,diamankan'
+            : 'required|in:hilang,ditemukan';
+
         $validated = $request->validate([
-            'tipe'           => 'required|in:hilang,ditemukan',
+            'tipe'           => $allowedTipe,
             'nama_barang'    => 'required|string|max:255',
             'kategori'       => 'required|string|max:255',
             'lokasi'         => 'required|string|max:255',
@@ -140,6 +155,12 @@ class PostinganController extends Controller
         }
 
         $postingan->update($validated);
+
+        // Smart redirect: kembali ke asal jika admin mengisi redirect_back
+        $redirectBack = $request->input('redirect_back');
+        if ($redirectBack && Auth::user()->is_admin) {
+            return redirect($redirectBack)->with('success', 'Postingan berhasil diperbarui.');
+        }
 
         return redirect()->route('postingan.show', $postingan->id)->with('success', 'Postingan berhasil diperbarui.');
     }
@@ -164,7 +185,9 @@ class PostinganController extends Controller
         }
 
         $postingan->delete();
-
+        if (Auth::user()->is_admin) {
+            return redirect()->route('admin.postingan.index')->with('success', 'Postingan berhasil dihapus.');
+        }
         return redirect()->route('beranda')->with('success', 'Postingan berhasil dihapus.');
     }
 

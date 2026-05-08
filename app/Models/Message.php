@@ -13,6 +13,7 @@ class Message extends Model
         'receiver_id',
         'body',
         'is_read',
+        'postingan_id',
     ];
 
     // Pengirim Pesan
@@ -25,5 +26,11 @@ class Message extends Model
     public function receiver()
     {
         return $this->belongsTo(User::class, 'receiver_id');
+    }
+
+    // Konteks Postingan
+    public function postingan()
+    {
+        return $this->belongsTo(\App\Models\Postingan::class, 'postingan_id');
     }
 }

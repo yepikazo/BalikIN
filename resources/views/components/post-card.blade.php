@@ -42,16 +42,22 @@
             <div style="display:flex;align-items:center;gap:0.4rem;position:relative;z-index:1">
                 {{-- Tombol Hubungi (hanya jika sudah login dan bukan pemilik) --}}
                 @auth
-                    @if(Auth::id() !== $post->user_id && $post->status !== 'selesai')
-                        <button
-                            onclick="event.preventDefault();openChatWith({{ $post->user_id }}, '{{ addslashes($post->user->name) }}', '{{ addslashes($post->nama_barang) }}')"
-                            title="Hubungi {{ $post->user->name }}"
-                            style="width:30px;height:30px;border-radius:var(--radius-full);background:var(--accent-light);border:1px solid rgba(200,146,42,0.3);color:var(--accent-dark);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;flex-shrink:0"
-                            onmouseover="this.style.background='var(--accent)';this.style.color='white'"
-                            onmouseout="this.style.background='var(--accent-light)';this.style.color='var(--accent-dark)'"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                        </button>
+                    @if(Auth::id() !== $post->user_id && $post->tipe !== 'selesai' && $post->tipe !== 'suspend')
+                        @php
+                            $chatTarget = ($post->tipe === 'diamankan')
+                                ? \App\Models\User::where('is_admin', true)->value('id')
+                                : $post->user_id;
+                        @endphp
+                        @if($chatTarget)
+                            <a href="{{ route('pesan.show', $chatTarget) }}?ref={{ $post->id }}&item={{ urlencode($post->nama_barang) }}"
+                               title="Hubungi via Pesan"
+                               style="width:30px;height:30px;border-radius:var(--radius-full);background:var(--accent-light);border:1px solid rgba(200,146,42,0.3);color:var(--accent-dark);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;flex-shrink:0;text-decoration:none;z-index:1;position:relative"
+                               onmouseover="this.style.background='var(--accent)';this.style.color='white'"
+                               onmouseout="this.style.background='var(--accent-light)';this.style.color='var(--accent-dark)'"
+                               onclick="event.stopPropagation()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            </a>
+                        @endif
                     @endif
                 @endauth
 

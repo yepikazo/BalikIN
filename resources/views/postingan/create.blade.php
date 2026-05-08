@@ -53,11 +53,11 @@
                 </div>
 
                 <div style="margin-bottom:1.75rem">
-                    <label class="bk-label">Foto Barang (Opsional)</label>
+                    <label class="bk-label">Foto Barang</label>
                     <div style="border:2px dashed var(--border);border-radius:var(--radius-md);padding:1.5rem;text-align:center;cursor:pointer;transition:border-color 0.15s" onclick="document.getElementById('foto-input').click()">
                         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--ink-faint)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 0.5rem"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                         <p style="font-size:0.82rem;color:var(--ink-faint)">Klik untuk unggah foto</p>
-                        <input id="foto-input" type="file" name="foto" accept="image/*" style="display:none">
+                        <input id="foto-input" type="file" name="foto" accept="image/*" required style="display:none">
                     </div>
                 </div>
 

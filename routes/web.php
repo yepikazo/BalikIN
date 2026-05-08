@@ -39,6 +39,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/pesan', [MessageController::class, 'index'])->name('pesan.index');
     Route::get('/pesan/{userId}', [MessageController::class, 'show'])->name('pesan.show');
     Route::post('/pesan', [MessageController::class, 'store'])->name('messages.store');
+    Route::put('/pesan/{id}', [MessageController::class, 'update'])->name('pesan.update');
+    Route::delete('/pesan/{id}', [MessageController::class, 'destroy'])->name('pesan.destroy');
 });
 
 
@@ -54,6 +56,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Kelola Postingan
     Route::get('/postingan', [AdminController::class, 'daftarPostingan'])->name('postingan.index');
+    Route::post('/postingan', [PostinganController::class, 'store'])->name('postingan.store');
     Route::put('/postingan/{id}/tipe', [AdminController::class, 'updateTipePostingan'])->name('postingan.updateTipe');
 
     // Kelola Laporan

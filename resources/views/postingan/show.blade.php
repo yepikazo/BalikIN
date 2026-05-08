@@ -3,6 +3,17 @@
 
     <div style="max-width:880px;margin:0 auto">
         {{-- Breadcrumb --}}
+        @if(auth()->check() && auth()->user()->is_admin)
+            <a href="{{ route('admin.postingan.index') }}"
+               style="display:inline-flex;align-items:center;gap:0.35rem;font-size:0.82rem;color:var(--ink-muted);margin-bottom:1.5rem;transition:color 0.15s"
+               onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--ink-muted)'">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"/>
+                </svg>
+                Kembali ke Daftar Postingan
+            </a>
+        @else
         <a href="{{ route('beranda') }}"
             style="display:inline-flex;align-items:center;gap:0.35rem;font-size:0.82rem;color:var(--ink-muted);margin-bottom:1.5rem;transition:color 0.15s"
             onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--ink-muted)'">
@@ -12,6 +23,7 @@
             </svg>
             Kembali ke Beranda
         </a>
+        @endif
 
          {{-- @if($postingan->tipe === 'suspend')
                 <div style="padding:1.5rem;border:1px solid var(--danger);background:var(--danger-light);color:var(--danger-dark);border-radius:var(--radius-md);margin-bottom:1.5rem">
@@ -202,9 +214,9 @@
                                         </p>
                                         @if(!Auth::user()->is_admin)
                                             @if($adminUser)
-                                                <button id="btn-hubungi"
-                                                    onclick="openChatWith({{ $adminUser->id }}, '{{ addslashes($adminUser->name) }}', '{{ addslashes($postingan->nama_barang) }}')"
-                                                    style="width:100%;padding:0.7rem 1rem;background:#1e40af;color:white;border:none;border-radius:var(--radius-md);font-size:0.875rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;transition:all 0.2s;font-family:var(--font-body)"
+                                                <a href="{{ route('pesan.show', $adminUser->id) }}?ref={{ $postingan->id }}&item={{ urlencode($postingan->nama_barang) }}"
+                                                    id="btn-hubungi"
+                                                    style="width:100%;padding:0.7rem 1rem;background:#1e40af;color:white;border:none;border-radius:var(--radius-md);font-size:0.875rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;transition:all 0.2s;text-decoration:none"
                                                     onmouseover="this.style.background='#1e3a8a';this.style.transform='translateY(-1px)'"
                                                     onmouseout="this.style.background='#1e40af';this.style.transform=''">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15"
@@ -213,7 +225,7 @@
                                                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                                                     </svg>
                                                     Hubungi Admin
-                                                </button>
+                                                </a>
                                                 <p style="font-size:0.72rem;color:#3b82f6;text-align:center;margin-top:0.5rem">
                                                     Chat dengan admin Balik.in
                                                 </p>
@@ -240,9 +252,9 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <button id="btn-hubungi"
-                                            onclick="openChatWith({{ $postingan->user_id }}, '{{ addslashes($postingan->user->name) }}', '{{ addslashes($postingan->nama_barang) }}')"
-                                            style="margin-top:1rem;width:100%;padding:0.7rem 1rem;background:var(--accent);color:white;border:none;border-radius:var(--radius-md);font-size:0.875rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;transition:all 0.2s;font-family:var(--font-body)"
+                                        <a href="{{ route('pesan.show', $postingan->user_id) }}?ref={{ $postingan->id }}&item={{ urlencode($postingan->nama_barang) }}"
+                                            id="btn-hubungi"
+                                            style="margin-top:1rem;width:100%;padding:0.7rem 1rem;background:var(--accent);color:white;border:none;border-radius:var(--radius-md);font-size:0.875rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;transition:all 0.2s;text-decoration:none"
                                             onmouseover="this.style.background='var(--accent-dark)';this.style.transform='translateY(-1px)'"
                                             onmouseout="this.style.background='var(--accent)';this.style.transform=''">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -251,9 +263,9 @@
                                                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                                             </svg>
                                             Hubungi {{ $postingan->user->name }}
-                                        </button>
+                                        </a>
                                         <p style="font-size:0.75rem;color:var(--ink-faint);text-align:center;margin-top:0.625rem">
-                                            Pesan akan langsung masuk ke chat
+                                            Anda akan diarahkan ke halaman pesan
                                         </p>
                                     </div>
                                 @endif
@@ -278,9 +290,9 @@
                                             $adminUser = \App\Models\User::where('is_admin', true)->first();
                                         @endphp
                                         @if($adminUser)
-                                            <button id="btn-hubungi-admin-pemilik"
-                                                onclick="openChatWith({{ $adminUser->id }}, '{{ addslashes($adminUser->name) }}', '{{ addslashes($postingan->nama_barang) }}')"
-                                                style="width:100%;padding:0.7rem 1rem;background:#1e40af;color:white;border:none;border-radius:var(--radius-md);font-size:0.875rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;transition:all 0.2s;font-family:var(--font-body)"
+                                            <a href="{{ route('pesan.show', $adminUser->id) }}?ref={{ $postingan->id }}&item={{ urlencode($postingan->nama_barang) }}"
+                                                id="btn-hubungi-admin-pemilik"
+                                                style="width:100%;padding:0.7rem 1rem;background:#1e40af;color:white;border:none;border-radius:var(--radius-md);font-size:0.875rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;transition:all 0.2s;text-decoration:none"
                                                 onmouseover="this.style.background='#1e3a8a';this.style.transform='translateY(-1px)'"
                                                 onmouseout="this.style.background='#1e40af';this.style.transform=''">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15"
@@ -289,7 +301,7 @@
                                                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                                                 </svg>
                                                 Hubungi Admin
-                                            </button>
+                                            </a>
                                         @endif
                                     @endif
                                 </div>

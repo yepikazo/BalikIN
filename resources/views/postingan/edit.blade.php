@@ -4,14 +4,15 @@
     <div style="max-width:660px;margin:0 auto">
 
         {{-- Breadcrumb --}}
-        <a href="{{ route('postingan.show', $postingan->id) }}"
+        @php $backUrl = request('redirect_back') ?: old('redirect_back', route('postingan.show', $postingan->id)); @endphp
+        <a href="{{ $backUrl }}"
            style="display:inline-flex;align-items:center;gap:0.35rem;font-size:0.82rem;color:var(--ink-muted);margin-bottom:1.5rem;transition:color 0.15s"
            onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--ink-muted)'">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="15 18 9 12 15 6"/>
             </svg>
-            Kembali ke Detail Postingan
+            Kembali
         </a>
 
         <div class="bk-page-header" style="margin-bottom:1.5rem">
@@ -36,6 +37,8 @@
             <form action="{{ route('postingan.update', $postingan->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
+                {{-- Redirect target setelah update (support admin redirect back) --}}
+                <input type="hidden" name="redirect_back" value="{{ request('redirect_back', old('redirect_back')) }}">
 
                 {{-- Tipe & Kategori --}}
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem">
@@ -48,6 +51,11 @@
                             <option value="ditemukan" {{ old('tipe', $postingan->tipe) == 'ditemukan' ? 'selected' : '' }}>
                                 Menemukan Barang
                             </option>
+                            @auth
+                                @if(auth()->user()->is_admin)
+                                    <option value="diamankan" {{ old('tipe', $postingan->tipe) == 'diamankan' ? 'selected' : '' }}>Diamankan</option>
+                                @endif
+                            @endauth
                         </select>
                     </div>
                     <div>
@@ -131,7 +139,7 @@
 
                 {{-- Action Buttons --}}
                 <div style="display:flex;justify-content:space-between;align-items:center;gap:0.75rem;flex-wrap:wrap">
-                    <a href="{{ route('postingan.show', $postingan->id) }}" class="bk-btn bk-btn--ghost">
+                    <a href="{{ request('redirect_back', old('redirect_back', route('postingan.show', $postingan->id))) }}" class="bk-btn bk-btn--ghost">
                         Batal
                     </a>
                     <button type="submit" class="bk-btn bk-btn--primary" style="padding:0.6rem 1.75rem">
