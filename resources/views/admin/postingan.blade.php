@@ -19,25 +19,18 @@
     </div>
 
     {{-- Stats Row --}}
-    @php
-        $totalAll       = $postingan->count();
-        $totalHilang    = $postingan->where('tipe','hilang')->count();
-        $totalDitemukan = $postingan->where('tipe','ditemukan')->count();
-        $totalDiamankan = $postingan->where('tipe','diamankan')->count();
-        $totalSuspend   = $postingan->where('tipe','suspend')->count();
-    @endphp
     <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;margin-bottom:1.5rem">
         @foreach([
-            ['label'=>'Total','val'=>$totalAll,'color'=>'var(--accent)'],
-            ['label'=>'Hilang','val'=>$totalHilang,'color'=>'var(--danger)'],
-            ['label'=>'Ditemukan','val'=>$totalDitemukan,'color'=>'var(--success)'],
-            ['label'=>'Diamankan','val'=>$totalDiamankan,'color'=>'#1e40af'],
-            ['label'=>'Suspend','val'=>$totalSuspend,'color'=>'#374151'],
+            ['key' => '', 'label'=>'Total','val'=>$stats['total'],'color'=>'var(--accent)','bg'=>'var(--accent-light)'],
+            ['key' => 'hilang', 'label'=>'Hilang','val'=>$stats['hilang'],'color'=>'var(--danger)','bg'=>'var(--danger-light)'],
+            ['key' => 'ditemukan', 'label'=>'Ditemukan','val'=>$stats['ditemukan'],'color'=>'var(--success)','bg'=>'var(--success-light)'],
+            ['key' => 'diamankan', 'label'=>'Diamankan','val'=>$stats['diamankan'],'color'=>'#1e40af','bg'=>'#dbeafe'],
+            ['key' => 'suspend', 'label'=>'Suspend','val'=>$stats['suspend'],'color'=>'#374151','bg'=>'#f3f4f6'],
         ] as $s)
-            <div class="bk-card" style="padding:1.25rem;border-left:3px solid {{ $s['color'] }}">
+            <a href="{{ request()->fullUrlWithQuery(['tipe' => $s['key']]) }}" class="bk-card" style="padding:1.25rem;border-left:3px solid {{ $s['color'] }};text-decoration:none;display:block;{{ (request('tipe') ?? '') === $s['key'] ? 'background:'.$s['bg'].';' : '' }} transition: all 0.2s;">
                 <div style="font-size:0.66rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--ink-faint);margin-bottom:0.3rem">{{ $s['label'] }}</div>
                 <div style="font-size:1.85rem;font-weight:800;color:{{ $s['color'] }};line-height:1">{{ $s['val'] }}</div>
-            </div>
+            </a>
         @endforeach
     </div>
 
@@ -45,6 +38,9 @@
     <div class="bk-card" style="padding:1rem 1.25rem;margin-bottom:1.25rem">
         <form method="GET" action="{{ route('admin.postingan.index') }}"
               style="display:flex;gap:0.75rem;align-items:center;width:100%">
+            @if(request('tipe'))
+                <input type="hidden" name="tipe" value="{{ request('tipe') }}">
+            @endif
             <div style="flex:1;min-width:0;position:relative">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink-faint)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);pointer-events:none">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -56,14 +52,6 @@
                     Cari
                 </button>
             </div>
-            <select name="tipe" class="bk-input" style="width:160px;flex-shrink:0;font-size:0.875rem" onchange="this.form.submit()">
-                <option value="">Semua Tipe</option>
-                @foreach(['hilang','ditemukan','diamankan','selesai','suspend'] as $t)
-                    <option value="{{ $t }}" {{ request('tipe') === $t ? 'selected' : '' }}>
-                        {{ ucfirst($t) }}
-                    </option>
-                @endforeach
-            </select>
             @if(request()->anyFilled(['q','tipe']))
                 <a href="{{ route('admin.postingan.index') }}" class="bk-btn bk-btn--ghost" style="flex-shrink:0;font-size:0.875rem">
                     Reset

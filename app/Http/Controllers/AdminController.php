@@ -29,6 +29,14 @@ class AdminController extends Controller
     // ─── Kelola Postingan ─────────────────────────────────────
     public function daftarPostingan(Request $request)
     {
+        $stats = [
+            'total'     => Postingan::count(),
+            'hilang'    => Postingan::where('tipe', 'hilang')->count(),
+            'ditemukan' => Postingan::where('tipe', 'ditemukan')->count(),
+            'diamankan' => Postingan::where('tipe', 'diamankan')->count(),
+            'suspend'   => Postingan::where('tipe', 'suspend')->count(),
+        ];
+
         $query = Postingan::with('user')->latest();
 
         // Filter tipe
@@ -47,7 +55,7 @@ class AdminController extends Controller
 
         $postingan = $query->get();
 
-        return view('admin.postingan', compact('postingan'));
+        return view('admin.postingan', compact('postingan', 'stats'));
     }
 
     /**
