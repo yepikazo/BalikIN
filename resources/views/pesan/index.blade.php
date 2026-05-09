@@ -1,5 +1,10 @@
-<x-app-layout>
-    <x-slot:title>Pesan — Balik.in</x-slot>
+@php
+    $layout = Auth::user()->role === 'admin' ? 'admin-layout' : 'app-layout';
+@endphp
+<x-dynamic-component :component="$layout" title="Pesan — Balik.in">
+    @if(Auth::user()->role !== 'admin')
+        <x-slot:title>Pesan — Balik.in</x-slot>
+    @endif
 
     <div style="max-width:900px;margin:0 auto">
         <div class="bk-page-header" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem">
@@ -65,4 +70,4 @@
             </div>
         @endif
     </div>
-</x-app-layout>
+</x-dynamic-component>

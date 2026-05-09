@@ -65,18 +65,13 @@ class MessageController extends Controller
             ->orderBy('created_at')
             ->get();
 
-        // Ambil postingan referensi dari conversation jika ada
-        $msgWithPost = $messages->whereNotNull('postingan_id')->first();
-        $conversationPost = $msgWithPost
-            ? \App\Models\Postingan::with('user')->find($msgWithPost->postingan_id)
-            : null;
 
         Message::where('sender_id', $userId)
             ->where('receiver_id', $currentId)
             ->where('is_read', false)
             ->update(['is_read' => true]);
 
-        return view('pesan.show', compact('otherUser', 'messages', 'conversationPost'));
+        return view('pesan.show', compact('otherUser', 'messages'));
     }
 
     /**
@@ -87,7 +82,7 @@ class MessageController extends Controller
         $validated = $request->validate([
             'receiver_id'  => 'required|exists:users,id',
             'body'         => 'required|string|max:1000',
-            'postingan_id' => 'nullable|exists:postingan,id',
+
         ]);
 
         if ($validated['receiver_id'] == Auth::id()) {

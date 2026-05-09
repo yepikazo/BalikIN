@@ -152,6 +152,11 @@ class PostinganController extends Controller
             // Simpan foto yang baru
             $fotoPath = $request->file('foto')->store('foto_barang', 'public');
             $validated['foto'] = $fotoPath;
+        } elseif ($request->input('remove_foto') == '1') {
+            if ($postingan->foto) {
+                Storage::disk('public')->delete($postingan->foto);
+            }
+            $validated['foto'] = null;
         }
 
         $postingan->update($validated);

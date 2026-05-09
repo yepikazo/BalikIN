@@ -55,13 +55,6 @@
                 <div style="flex:1;min-width:0">
                     <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.4rem">
                         <span class="bk-badge bk-badge--{{ $post->tipe }}">{{ $post->tipe }}</span>
-                        {{-- @if($post->tipe === 'diamankan')
-                            <span class="bk-badge" style="background:#dbeafe;color:#1e40af">Diamankan</span> --}}
-                        {{-- {{-- @if($post->tipe === 'selesai')
-                            <span class="bk-badge" style="background:var(--success-light);color:var(--success)">Selesai</span>
-                        @elseif($post->tipe === 'suspend')
-                            <span class="bk-badge" style="background:var(--danger-light);color:var(--danger)">Suspend</span>
-                        @endif --}}
                     </div>
                     <a href="{{ route('postingan.show', $post->id) }}"
                        style="font-size:1rem;font-weight:700;color:var(--ink);letter-spacing:-0.01em;display:block;margin-bottom:0.25rem"
@@ -88,7 +81,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         Lihat
                     </a>
-                    @if ($post->tipe !== 'diamankan' || Auth::user()->is_admin)
+                    @if (!in_array($post->tipe, ['diamankan', 'suspend']) || Auth::user()->is_admin)
                         <a href="{{ route('postingan.edit', $post->id) }}" class="bk-btn bk-btn--ghost"
                            style="font-size:0.8rem;padding:0.4rem 0.8rem">
                             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>

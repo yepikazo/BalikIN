@@ -1,0 +1,1 @@
+@if(true)<x-app-layout>@else<x-admin-layout>@endif test @if(true)</x-app-layout>@else</x-admin-layout>@endif

@@ -106,35 +106,38 @@
                 <div style="margin-bottom:1.75rem">
                     <label class="bk-label">Foto Barang</label>
 
-                    {{-- Preview foto existing --}}
-                    @if($postingan->foto)
-                        <div style="margin-bottom:0.875rem;position:relative;display:inline-block">
-                            <img src="{{ asset('storage/' . $postingan->foto) }}"
-                                 style="height:120px;border-radius:var(--radius-md);object-fit:cover;border:1px solid var(--border-subtle);display:block"
-                                 alt="Foto saat ini">
-                            <div style="font-size:0.72rem;color:var(--ink-faint);margin-top:0.3rem;text-align:center">Foto saat ini</div>
+                    {{-- Preview foto existing atau preview foto baru --}}
+                    <div id="foto-preview-container" style="display:{{ $postingan->foto ? 'block' : 'none' }};margin-bottom:0.875rem;position:relative;">
+                        <div style="display:inline-block;position:relative">
+                            <img id="foto-preview-img" src="{{ $postingan->foto ? asset('storage/' . $postingan->foto) : '' }}"
+                                 style="height:140px;border-radius:var(--radius-md);object-fit:cover;border:1px solid var(--border-subtle);display:block"
+                                 alt="Preview Foto">
+                            <button type="button" onclick="hapusFoto()" style="position:absolute;top:-10px;right:-10px;background:var(--danger);color:white;border:none;border-radius:50%;width:26px;height:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 4px rgba(0,0,0,0.2);transition:transform 0.1s" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </button>
                         </div>
-                    @endif
+                    </div>
 
                     <div id="foto-drop"
-                         style="border:2px dashed var(--border);border-radius:var(--radius-md);padding:1.25rem;text-align:center;cursor:pointer;transition:border-color 0.15s,background 0.15s"
+                         style="display:{{ $postingan->foto ? 'none' : 'block' }};border:2px dashed var(--border);border-radius:var(--radius-md);padding:1.5rem;text-align:center;cursor:pointer;transition:border-color 0.15s,background 0.15s"
                          onclick="document.getElementById('foto-input').click()"
                          ondragover="event.preventDefault();this.style.borderColor='var(--accent)';this.style.background='var(--accent-light)'"
                          ondragleave="this.style.borderColor='var(--border)';this.style.background=''"
                          ondrop="handleDrop(event)">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
                              stroke="var(--ink-faint)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
-                             style="margin:0 auto 0.4rem">
+                             style="margin:0 auto 0.5rem">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                             <polyline points="17 8 12 3 7 8"/>
                             <line x1="12" y1="3" x2="12" y2="15"/>
                         </svg>
                         <p id="foto-label" style="font-size:0.82rem;color:var(--ink-faint)">
-                            {{ $postingan->foto ? 'Klik atau seret untuk ganti foto' : 'Klik atau seret untuk unggah foto' }}
+                            Klik atau seret untuk unggah foto
                         </p>
                         <input id="foto-input" type="file" name="foto" accept="image/*" style="display:none"
                                onchange="previewFoto(this)">
                     </div>
+                    <input type="hidden" id="remove-foto-input" name="remove_foto" value="0">
                 </div>
 
                 {{-- Action Buttons --}}
@@ -162,14 +165,21 @@
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = e => {
-                    const label = document.getElementById('foto-label');
-                    label.textContent = '✓ ' + input.files[0].name;
-                    const drop = document.getElementById('foto-drop');
-                    drop.style.borderColor = 'var(--success)';
-                    drop.style.background = 'var(--success-light)';
+                    document.getElementById('foto-preview-img').src = e.target.result;
+                    document.getElementById('foto-preview-container').style.display = 'block';
+                    document.getElementById('foto-drop').style.display = 'none';
+                    document.getElementById('remove-foto-input').value = '0';
                 };
                 reader.readAsDataURL(input.files[0]);
             }
+        }
+
+        function hapusFoto() {
+            document.getElementById('foto-input').value = '';
+            document.getElementById('foto-preview-img').src = '';
+            document.getElementById('foto-preview-container').style.display = 'none';
+            document.getElementById('foto-drop').style.display = 'block';
+            document.getElementById('remove-foto-input').value = '1';
         }
 
         function handleDrop(e) {

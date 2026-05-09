@@ -1,12 +1,11 @@
-﻿<x-app-layout>
-    <x-slot:title>Chat dengan {{ $otherUser->name }} — Balik.in</x-slot>
+﻿@php
+    $layout = Auth::user()->role === 'admin' ? 'admin-layout' : 'app-layout';
+@endphp
+<x-dynamic-component :component="$layout" title="Chat dengan {{ $otherUser->name }} — Balik.in">
+    @if(Auth::user()->role !== 'admin')
+        <x-slot:title>Chat dengan {{ $otherUser->name }} — Balik.in</x-slot>
+    @endif
 
-    @php
-        $refId   = request('ref');
-        $refPost = $refId ? \App\Models\Postingan::with('user')->find($refId) : null;
-        // conversationPost: dari DB (terdeteksi controller) ATAU dari URL param
-        $sharedPost = $conversationPost ?? $refPost;
-    @endphp
 
 
     <div style="max-width:780px;margin:0 auto">
@@ -36,43 +35,6 @@
             <div id="messages-container"
                 style="flex:1;overflow-y:auto;padding:1.25rem;display:flex;flex-direction:column;gap:0.75rem;background:var(--surface)">
 
-                {{-- Instagram-style Post Share Card --}}
-                @if($sharedPost)
-                    <div style="display:flex;justify-content:center;margin-bottom:0.5rem">
-                        <div style="width:100%;max-width:280px;background:white;border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;box-shadow:var(--shadow-sm)">
-                            @if($sharedPost->foto)
-                                <div style="position:relative;height:180px;overflow:hidden">
-                                    <img src="{{ asset('storage/'.$sharedPost->foto) }}" alt="{{ $sharedPost->nama_barang }}" style="width:100%;height:100%;object-fit:cover;display:block">
-                                    <div style="position:absolute;top:8px;left:8px"><span class="bk-badge bk-badge--{{ $sharedPost->tipe }}">{{ $sharedPost->tipe }}</span></div>
-                                </div>
-                            @else
-                                <div style="height:110px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;position:relative">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--surface-3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                                    <div style="position:absolute;top:8px;left:8px"><span class="bk-badge bk-badge--{{ $sharedPost->tipe }}">{{ $sharedPost->tipe }}</span></div>
-                                </div>
-                            @endif
-                            <div style="padding:0.75rem 0.875rem">
-                                <div style="font-size:0.62rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:0.2rem">{{ $sharedPost->kategori }}</div>
-                                <div style="font-weight:700;font-size:0.9rem;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:0.3rem">{{ $sharedPost->nama_barang }}</div>
-                                <div style="display:flex;align-items:center;gap:0.3rem;font-size:0.72rem;color:var(--ink-faint);margin-bottom:0.4rem">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                                    {{ $sharedPost->lokasi }}
-                                </div>
-                                <div style="display:flex;align-items:center;gap:0.4rem">
-                                    <div style="width:18px;height:18px;border-radius:var(--radius-full);background:var(--ink);color:white;font-size:0.55rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">{{ strtoupper(substr($sharedPost->user->name, 0, 1)) }}</div>
-                                    <span style="font-size:0.72rem;color:var(--ink-muted)">{{ $sharedPost->user->name }}</span>
-                                </div>
-                            </div>
-                            <a href="{{ route('postingan.show', $sharedPost->id) }}" style="display:flex;align-items:center;justify-content:center;gap:0.4rem;padding:0.6rem;border-top:1px solid var(--border-subtle);font-size:0.78rem;font-weight:600;color:var(--accent-dark);text-decoration:none;transition:background 0.15s" onmouseover="this.style.background='var(--accent-light)'" onmouseout="this.style.background='transparent'">
-                                Lihat Postingan
-                                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                            </a>
-                        </div>
-                    </div>
-                    <div style="text-align:center;margin-bottom:0.75rem">
-                        <span style="font-size:0.7rem;color:var(--ink-faint);background:var(--surface-2);padding:3px 10px;border-radius:var(--radius-full)">Membahas postingan ini</span>
-                    </div>
-                @endif
 
                 @forelse($messages as $msg)
                     @php $isSent = $msg->sender_id === Auth::id(); @endphp
@@ -87,13 +49,11 @@
                         <div class="msg-time" style="font-size:0.68rem;color:var(--ink-faint);margin-top:3px;padding:0 4px">{{ $msg->created_at->format('d M Y, H:i') }}</div>
                     </div>
                 @empty
-                    @if(!$sharedPost)
                         <div id="empty-state" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.75rem;padding:2rem;text-align:center;height:100%">
                             <div style="width:56px;height:56px;border-radius:var(--radius-full);background:var(--accent);color:white;font-size:1.2rem;font-weight:700;display:flex;align-items:center;justify-content:center">{{ strtoupper(substr($otherUser->name, 0, 1)) }}</div>
                             <p style="font-weight:600;font-size:0.9rem;color:var(--ink)">{{ $otherUser->name }}</p>
                             <p style="font-size:0.8rem;color:var(--ink-faint)">Mulai percakapan dengan mengirim pesan pertama.</p>
                         </div>
-                    @endif
                 @endforelse
 
                 <div id="typing-indicator" style="display:none;align-items:flex-start">
@@ -103,98 +63,12 @@
                 </div>
             </div>
 
-                            {{-- Post Image --}}
-                            @if($refPost->foto)
-                                <div style="position:relative;height:180px;overflow:hidden">
-                                    <img src="{{ asset('storage/'.$refPost->foto) }}"
-                                         alt="{{ $refPost->nama_barang }}"
-                                         style="width:100%;height:100%;object-fit:cover;display:block">
-                                    <div style="position:absolute;top:8px;left:8px">
-                                        <span class="bk-badge bk-badge--{{ $refPost->tipe }}">{{ $refPost->tipe }}</span>
-                                    </div>
-                                </div>
-                            @else
-                                <div style="height:120px;background:var(--surface-2);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--surface-3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                                    <div style="position:absolute;top:8px;left:8px">
-                                        <span class="bk-badge bk-badge--{{ $refPost->tipe }}">{{ $refPost->tipe }}</span>
-                                    </div>
-                                </div>
-                            @endif
-
-                            {{-- Post Info --}}
-                            <div style="padding:0.75rem 0.875rem">
-                                <div style="font-size:0.62rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:0.25rem">{{ $refPost->kategori }}</div>
-                                <div style="font-weight:700;font-size:0.9rem;color:var(--ink);line-height:1.3;margin-bottom:0.375rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $refPost->nama_barang }}</div>
-                                <div style="display:flex;align-items:center;gap:0.3rem;font-size:0.72rem;color:var(--ink-faint)">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                                    {{ $refPost->lokasi }}
-                                </div>
-                                <div style="display:flex;align-items:center;gap:0.4rem;margin-top:0.5rem">
-                                    <div style="width:18px;height:18px;border-radius:var(--radius-full);background:var(--ink);color:white;font-size:0.55rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                                        {{ strtoupper(substr($refPost->user->name, 0, 1)) }}
-                                    </div>
-                                    <span style="font-size:0.72rem;color:var(--ink-muted)">{{ $refPost->user->name }}</span>
-                                </div>
-                            </div>
-
-                            {{-- View Post Link --}}
-                            <a href="{{ route('postingan.show', $refPost->id) }}"
-                               style="display:flex;align-items:center;justify-content:center;gap:0.4rem;padding:0.625rem;border-top:1px solid var(--border-subtle);font-size:0.78rem;font-weight:600;color:var(--accent-dark);text-decoration:none;transition:background 0.15s"
-                               onmouseover="this.style.background='var(--accent-light)'"
-                               onmouseout="this.style.background='transparent'">
-                                Lihat Postingan
-                                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                            </a>
-                        </div>
-                    </div>
-
-                    {{-- Label konteks --}}
-                    <div style="text-align:center;margin-bottom:0.75rem">
-                        <span style="font-size:0.7rem;color:var(--ink-faint);background:var(--surface-2);padding:3px 10px;border-radius:var(--radius-full)">Membahas postingan ini</span>
-                    </div>
-                @endif
-
-                @forelse($messages as $msg)
-                    @php $isSent = $msg->sender_id === Auth::id(); @endphp
-                    <div class="chat-msg-wrap {{ $isSent ? 'sent' : 'received' }}" style="display:flex;flex-direction:column;align-items:{{ $isSent ? 'flex-end' : 'flex-start' }}">
-                        <div style="max-width:72%;padding:0.75rem 1rem;border-radius:{{ $isSent ? 'var(--radius-md) 4px var(--radius-md) var(--radius-md)' : '4px var(--radius-md) var(--radius-md) var(--radius-md)' }};font-size:0.875rem;line-height:1.5;word-break:break-word;background:{{ $isSent ? 'var(--ink)' : 'white' }};color:{{ $isSent ? 'white' : 'var(--ink)' }};border:{{ $isSent ? 'none' : '1px solid var(--border-subtle)' }}">
-                            {{ $msg->body }}
-                        </div>
-                        <div style="font-size:0.68rem;color:var(--ink-faint);margin-top:3px;padding:0 4px">
-                            {{ $msg->created_at->format('d M Y, H:i') }}
-                        </div>
-                    </div>
-                @empty
-                    @if(!$refPost)
-                        <div id="empty-state" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.75rem;padding:2rem;text-align:center;height:100%">
-                            <div style="width:56px;height:56px;border-radius:var(--radius-full);background:var(--accent);color:white;font-size:1.2rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin-bottom:0.25rem">
-                                {{ strtoupper(substr($otherUser->name, 0, 1)) }}
-                            </div>
-                            <p style="font-weight:600;font-size:0.9rem;color:var(--ink)">{{ $otherUser->name }}</p>
-                            <p style="font-size:0.8rem;color:var(--ink-faint)">Mulai percakapan dengan mengirim pesan pertama.</p>
-                        </div>
-                    @endif
-                @endforelse
-
-                {{-- Typing indicator (hidden) --}}
-                <div id="typing-indicator" style="display:none;align-items:flex-start">
-                    <div style="padding:0.625rem 1rem;background:white;border:1px solid var(--border-subtle);border-radius:4px var(--radius-md) var(--radius-md) var(--radius-md);display:flex;gap:4px;align-items:center">
-                        <span class="typing-dot"></span>
-                        <span class="typing-dot" style="animation-delay:0.2s"></span>
-                        <span class="typing-dot" style="animation-delay:0.4s"></span>
-                    </div>
-                </div>
-            </div>
-
             <div style="padding:0.875rem 1.25rem;border-top:1px solid var(--border-subtle);background:white">
                 <form id="chat-form" style="display:flex;gap:0.625rem;align-items:flex-end" onsubmit="sendMsg(event)">
-                    @if($sharedPost && !$conversationPost)
-                        <input type="hidden" id="postingan-ref-id" value="{{ $sharedPost->id }}">
-                    @endif
                     <input type="text" id="msg-input" placeholder="Tulis pesan..." class="bk-input"
                         style="flex:1;min-width:0;border-radius:var(--radius-full);padding:0.6rem 1rem"
-                        autocomplete="off" maxlength="1000">
+                        autocomplete="off" maxlength="1000"
+                        value="{{ request('item') ? 'Saya ingin berbincang tentang postingan anda terkait ' . request('item') . ' Bisakah kita membahas ini lebih lanjut?' : '' }}">
                     <button type="submit" id="send-btn"
                         style="width:40px;height:40px;border-radius:var(--radius-full);background:var(--ink);color:white;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s"
                         onmouseover="this.style.background='var(--accent)'" onmouseout="this.style.background='var(--ink)'">
@@ -331,20 +205,19 @@
             if (!body) return;
             input.value=''; input.disabled=true; sendBtn.disabled=true; sendBtn.style.opacity='0.5';
             document.getElementById('empty-state')?.remove();
-            const refInput    = document.getElementById('postingan-ref-id');
-            const postinganId = (currentMessages.length===0 && refInput) ? refInput.value : null;
+
             const tempEl = createMsgEl('tmp', body, true, 'Mengirim...');
             container.insertBefore(tempEl, document.getElementById('typing-indicator'));
             scrollBottom(true);
             try {
                 const payload = { receiver_id: receiverId, body };
-                if (postinganId) payload.postingan_id = postinganId;
+
                 const res  = await fetch('/pesan', {method:'POST',headers:{'Content-Type':'application/json','X-CSRF-TOKEN':csrfToken,'Accept':'application/json'},body:JSON.stringify(payload)});
                 const data = await res.json();
                 if (res.ok && data.message) {
                     tempEl.dataset.msgId = data.message.id;
                     tempEl.querySelector('.msg-time').textContent = formatTime(data.message.created_at);
-                    if (refInput) refInput.remove();
+
                     currentMessages.push({id:data.message.id,body,sender_id:currentUserId,updated_at:data.message.updated_at});
                 } else { tempEl.remove(); input.value=body; showToast(data.error||'Gagal mengirim pesan.','error'); }
             } catch(err) { tempEl.remove(); input.value=body; showToast('Koneksi gagal.','error'); }
@@ -433,4 +306,4 @@
         }
     </script>
     @endpush
-</x-app-layout>
+</x-dynamic-component>

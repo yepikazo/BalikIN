@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 
 <head>
@@ -422,6 +422,11 @@
         .bk-badge--selesai {
             background: var(--surface-3);
             color: var(--ink-muted);
+        }
+
+        .bk-badge--suspend {
+            background: #1f1f1f;
+            color: #f87171;
         }
 
         /* ===========================

@@ -63,7 +63,7 @@
                     </div>
 
                     @auth
-                        @if (Auth::user()->is_admin || (Auth::id() === $postingan->user_id && $postingan->tipe !== 'diamankan'))
+                        @if (Auth::user()->is_admin || (Auth::id() === $postingan->user_id && !in_array($postingan->tipe, ['diamankan', 'suspend'])))
                             <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
                                 <a href="{{ route('postingan.edit', $postingan->id) }}" class="bk-btn bk-btn--ghost"
                                     style="font-size:0.82rem">
@@ -274,7 +274,7 @@
                                 {{-- Pemilik sendiri --}}
                                 <div style="background:var(--surface-2);border:1px dashed var(--border);border-radius:var(--radius-md);padding:1rem;text-align:center">
                                     <p style="font-size:0.82rem;color:var(--ink-muted)">Ini adalah postingan Anda sendiri.</p>
-                                    @if ($postingan->tipe !== 'diamankan' || Auth::user()->is_admin)
+                                    @if (!in_array($postingan->tipe, ['diamankan', 'suspend']) || Auth::user()->is_admin)
                                         <a href="{{ route('postingan.edit', $postingan->id) }}"
                                            style="display:inline-flex;align-items:center;gap:0.4rem;margin-top:0.625rem;font-size:0.8rem;color:var(--accent-dark);font-weight:600">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
@@ -285,7 +285,13 @@
                                             Edit Postingan
                                         </a>
                                     @else
-                                        <p style="font-size:0.8rem;color:var(--danger);margin-top:0.5rem;margin-bottom:1rem">Postingan sedang diamankan oleh admin dan tidak dapat diedit.</p>
+                                        <p style="font-size:0.8rem;color:var(--danger);margin-top:0.5rem;margin-bottom:1rem">
+                                            @if($postingan->tipe === 'suspend')
+                                                Postingan telah disuspend oleh admin dan tidak dapat diedit.
+                                            @else
+                                                Postingan sedang diamankan oleh admin dan tidak dapat diedit.
+                                            @endif
+                                        </p>
                                         @php
                                             $adminUser = \App\Models\User::where('is_admin', true)->first();
                                         @endphp

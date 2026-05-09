@@ -1,38 +1,43 @@
-<section>
-    <header>
-        <h2 class="text-lg font-medium text-gray-900">
-            {{ __('Update Password') }}
+<section style="max-width:36rem">
+    <header style="margin-bottom:1.5rem">
+        <h2 style="font-size:1.25rem;font-weight:700;color:var(--ink)">
+            {{ __('Ubah Kata Sandi') }}
         </h2>
-
-        <p class="mt-1 text-sm text-gray-600">
-            {{ __('Ensure your account is using a long, random password to stay secure.') }}
+        <p style="font-size:0.875rem;color:var(--ink-muted);margin-top:0.35rem">
+            {{ __('Pastikan akun Anda menggunakan kata sandi panjang dan acak untuk tetap aman.') }}
         </p>
     </header>
 
-    <form method="post" action="{{ route('password.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('password.update') }}" style="display:flex;flex-direction:column;gap:1.25rem">
         @csrf
         @method('put')
 
         <div>
-            <x-input-label for="update_password_current_password" :value="__('Current Password')" />
-            <x-text-input id="update_password_current_password" name="current_password" type="password" class="mt-1 block w-full" autocomplete="current-password" />
-            <x-input-error :messages="$errors->updatePassword->get('current_password')" class="mt-2" />
+            <label for="update_password_current_password" class="bk-label">{{ __('Kata Sandi Saat Ini') }}</label>
+            <input id="update_password_current_password" name="current_password" type="password" class="bk-input" autocomplete="current-password" />
+            @error('current_password', 'updatePassword')
+                <div style="font-size:0.75rem;color:var(--danger);margin-top:0.3rem">{{ $message }}</div>
+            @enderror
         </div>
 
         <div>
-            <x-input-label for="update_password_password" :value="__('New Password')" />
-            <x-text-input id="update_password_password" name="password" type="password" class="mt-1 block w-full" autocomplete="new-password" />
-            <x-input-error :messages="$errors->updatePassword->get('password')" class="mt-2" />
+            <label for="update_password_password" class="bk-label">{{ __('Kata Sandi Baru') }}</label>
+            <input id="update_password_password" name="password" type="password" class="bk-input" autocomplete="new-password" />
+            @error('password', 'updatePassword')
+                <div style="font-size:0.75rem;color:var(--danger);margin-top:0.3rem">{{ $message }}</div>
+            @enderror
         </div>
 
         <div>
-            <x-input-label for="update_password_password_confirmation" :value="__('Confirm Password')" />
-            <x-text-input id="update_password_password_confirmation" name="password_confirmation" type="password" class="mt-1 block w-full" autocomplete="new-password" />
-            <x-input-error :messages="$errors->updatePassword->get('password_confirmation')" class="mt-2" />
+            <label for="update_password_password_confirmation" class="bk-label">{{ __('Konfirmasi Kata Sandi') }}</label>
+            <input id="update_password_password_confirmation" name="password_confirmation" type="password" class="bk-input" autocomplete="new-password" />
+            @error('password_confirmation', 'updatePassword')
+                <div style="font-size:0.75rem;color:var(--danger);margin-top:0.3rem">{{ $message }}</div>
+            @enderror
         </div>
 
-        <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
+        <div style="display:flex;align-items:center;gap:1rem;margin-top:0.5rem">
+            <button type="submit" class="bk-btn bk-btn--primary">{{ __('Simpan') }}</button>
 
             @if (session('status') === 'password-updated')
                 <p
@@ -40,8 +45,8 @@
                     x-show="show"
                     x-transition
                     x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600"
-                >{{ __('Saved.') }}</p>
+                    style="font-size:0.875rem;color:var(--ink-muted)"
+                >{{ __('Tersimpan.') }}</p>
             @endif
         </div>
     </form>
