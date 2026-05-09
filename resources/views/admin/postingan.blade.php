@@ -222,9 +222,9 @@
         </div>
         <div style="padding:0.875rem 1.25rem;border-top:1px solid var(--border-subtle);font-size:0.8rem;color:var(--ink-faint);display:flex;justify-content:space-between;align-items:center">
             <span>Menampilkan <strong style="color:var(--ink)">{{ $postingan->count() }}</strong> postingan</span>
-            <a href="{{ route('beranda') }}" style="color:var(--accent-dark);font-weight:500;font-size:0.8rem" target="_blank">
+            {{-- <a href="{{ route('beranda') }}" style="color:var(--accent-dark);font-weight:500;font-size:0.8rem" target="_blank">
                 Lihat Beranda →
-            </a>
+            </a> --}}
         </div>
     </div>
 
