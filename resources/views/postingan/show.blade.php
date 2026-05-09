@@ -1,5 +1,10 @@
-<x-app-layout>
-    <x-slot:title>{{ $postingan->nama_barang }} — Balik.in</x-slot>
+@php
+    $layout = (Auth::check() && Auth::user()->is_admin) ? 'admin-layout' : 'app-layout';
+@endphp
+<x-dynamic-component :component="$layout" title="{{ $postingan->nama_barang }} — Balik.in">
+    @if(!Auth::check() || !Auth::user()->is_admin)
+        <x-slot:title>{{ $postingan->nama_barang }} — Balik.in</x-slot>
+    @endif
 
     <div style="max-width:880px;margin:0 auto">
         {{-- Breadcrumb --}}
@@ -412,7 +417,7 @@
 
         </div>
     </div>
-</x-app-layout>
+</x-dynamic-component>
 
 @push('scripts')
     <style>

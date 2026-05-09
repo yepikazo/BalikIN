@@ -1,5 +1,10 @@
-<x-app-layout>
-    <x-slot:title>Postingan Saya — Balik.in</x-slot>
+@php
+    $layout = Auth::user()->is_admin ? 'admin-layout' : 'app-layout';
+@endphp
+<x-dynamic-component :component="$layout" title="Postingan Saya — Balik.in">
+    @if(!Auth::user()->is_admin)
+        <x-slot:title>Postingan Saya — Balik.in</x-slot>
+    @endif
 
     {{-- Header --}}
     <div class="bk-page-header" style="margin-bottom:2rem">
@@ -117,4 +122,4 @@
         </div>
     @endforelse
 
-</x-app-layout>
+</x-dynamic-component>

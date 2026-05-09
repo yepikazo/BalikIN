@@ -1,15 +1,24 @@
-<x-app-layout>
-    <x-slot:title>Buat Laporan — Balik.in</x-slot>
+@php
+    $layout = Auth::user()->is_admin ? 'admin-layout' : 'app-layout';
+@endphp
+<x-dynamic-component :component="$layout" title="Buat Laporan — Balik.in">
+    @if(!Auth::user()->is_admin)
+        <x-slot:title>Buat Laporan — Balik.in</x-slot>
+    @endif
 
     <div style="max-width:640px;margin:0 auto">
-        <div class="bk-page-header">
-            <h1 class="bk-page-header__title">Buat Laporan</h1>
-            <p class="bk-page-header__sub">Isi detail barang hilang atau barang temuan Anda.</p>
-        </div>
+        @if (!Auth::user()->is_admin)
+            <div class="bk-page-header">
+                <h1 class="bk-page-header__title">Buat Laporan</h1>
+                <p class="bk-page-header__sub">Isi detail barang hilang atau barang temuan Anda.</p>
+            </div>
+        @endif
+        
 
         <div class="bk-card" style="padding:2rem;box-shadow:var(--shadow-md)">
             <form action="{{ route('postingan.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
+                <input type="hidden" name="redirect_back" value="{{ request('redirect_back', old('redirect_back')) }}">
 
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem">
                     <div>
@@ -17,6 +26,11 @@
                         <select name="tipe" class="bk-input" required>
                             <option value="hilang" {{ old('tipe') == 'hilang' ? 'selected' : '' }}>Kehilangan Barang</option>
                             <option value="ditemukan" {{ old('tipe') == 'ditemukan' ? 'selected' : '' }}>Menemukan Barang</option>
+                            @auth
+                                @if(Auth::user()->is_admin)
+                                    <option value="diamankan" {{ old('tipe') == 'diamankan' ? 'selected' : '' }}>Diamankan</option>
+                                @endif
+                            @endauth
                         </select>
                     </div>
                     <div>
@@ -72,7 +86,7 @@
                 </div>
 
                 <div style="display:flex;justify-content:space-between;align-items:center">
-                    <a href="{{ route('beranda') }}" class="bk-btn bk-btn--ghost">Batal</a>
+                    <a href="{{ request('redirect_back', old('redirect_back', route('beranda'))) }}" class="bk-btn bk-btn--ghost">Batal</a>
                     <button type="submit" class="bk-btn bk-btn--primary" style="padding:0.6rem 1.75rem">Posting Laporan</button>
                 </div>
             </form>
@@ -110,4 +124,4 @@
         }
     </script>
     @endpush
-</x-app-layout>
+</x-dynamic-component>

@@ -1,8 +1,8 @@
 @php
-    $layout = Auth::user()->role === 'admin' ? 'admin-layout' : 'app-layout';
+    $layout = Auth::user()->is_admin ? 'admin-layout' : 'app-layout';
 @endphp
 <x-dynamic-component :component="$layout" title="Pesan — Balik.in">
-    @if(Auth::user()->role !== 'admin')
+    @if(!Auth::user()->is_admin)
         <x-slot:title>Pesan — Balik.in</x-slot>
     @endif
 

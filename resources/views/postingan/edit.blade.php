@@ -1,5 +1,10 @@
-<x-app-layout>
-    <x-slot:title>Edit Postingan — Balik.in</x-slot>
+@php
+    $layout = Auth::user()->is_admin ? 'admin-layout' : 'app-layout';
+@endphp
+<x-dynamic-component :component="$layout" title="Edit Postingan — Balik.in">
+    @if(!Auth::user()->is_admin)
+        <x-slot:title>Edit Postingan — Balik.in</x-slot>
+    @endif
 
     <div style="max-width:660px;margin:0 auto">
 
@@ -196,4 +201,4 @@
         }
     </script>
     @endpush
-</x-app-layout>
+</x-dynamic-component>

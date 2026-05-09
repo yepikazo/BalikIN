@@ -8,14 +8,14 @@
             <h1 style="font-size:1.75rem;font-weight:800;letter-spacing:-0.03em;color:var(--ink);margin-bottom:0.35rem">Kelola Postingan</h1>
             <p style="font-size:0.9rem;color:var(--ink-muted)">Pantau dan ubah status semua postingan dari pengguna.</p>
         </div>
-        <button onclick="document.getElementById('modal-tambah-post').style.display='flex'"
-                class="bk-btn bk-btn--primary" style="flex-shrink:0;display:flex;align-items:center;gap:0.4rem">
+        <a href="{{ route('postingan.create', ['redirect_back' => url()->current()]) }}"
+                class="bk-btn bk-btn--primary" style="flex-shrink:0;display:flex;align-items:center;gap:0.4rem;text-decoration:none">
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
                  stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
             Tambah Postingan
-        </button>
+        </a>
     </div>
 
     {{-- Stats Row --}}
@@ -228,147 +228,6 @@
         </div>
     </div>
 
-{{-- ═══════════════════════════════════════════════════════════════ --}}
-{{-- Modal Tambah Postingan (Admin)                                  --}}
-{{-- ═══════════════════════════════════════════════════════════════ --}}
-<div id="modal-tambah-post"
-     style="display:none;position:fixed;inset:0;z-index:9000;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);backdrop-filter:blur(3px)"
-     onclick="if(event.target===this)this.style.display='none'">
-    <div style="background:var(--surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-xl);width:100%;max-width:600px;max-height:90vh;overflow-y:auto;margin:1rem">
 
-        {{-- Modal Header --}}
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:1.5rem 1.75rem;border-bottom:1px solid var(--border)">
-            <div>
-                <h2 style="font-size:1.1rem;font-weight:700;color:var(--ink);margin:0">Tambah Postingan</h2>
-                <p style="font-size:0.78rem;color:var(--ink-faint);margin:0.2rem 0 0">Buat postingan baru sebagai Admin</p>
-            </div>
-            <button onclick="document.getElementById('modal-tambah-post').style.display='none'"
-                    style="background:none;border:none;cursor:pointer;padding:0.35rem;border-radius:var(--radius-sm);color:var(--ink-muted)"
-                    onmouseover="this.style.background='var(--surface-2)'" onmouseout="this.style.background='none'">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-            </button>
-        </div>
-
-        {{-- Modal Body --}}
-        <div style="padding:1.75rem">
-
-            @if($errors->any())
-                <div style="background:var(--danger-light);border:1px solid #f5c0bc;border-radius:var(--radius-sm);padding:1rem;margin-bottom:1.25rem">
-                    <div style="font-weight:600;font-size:0.83rem;color:var(--danger);margin-bottom:0.4rem">Terdapat kesalahan:</div>
-                    <ul style="list-style:disc;padding-left:1.25rem;font-size:0.8rem;color:var(--danger)">
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
-            <form action="{{ route('admin.postingan.store') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                {{-- Redirect back ke halaman admin setelah submit --}}
-                <input type="hidden" name="redirect_back" value="{{ url()->current() }}">
-
-                {{-- Tipe & Kategori --}}
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem">
-                    <div>
-                        <label class="bk-label">Tipe Laporan</label>
-                        <select name="tipe" class="bk-input" required>
-                            <option value="hilang"    {{ old('tipe') == 'hilang'    ? 'selected' : '' }}>Kehilangan Barang</option>
-                            <option value="ditemukan" {{ old('tipe') == 'ditemukan' ? 'selected' : '' }}>Menemukan Barang</option>
-                            <option value="diamankan" {{ old('tipe') == 'diamankan' ? 'selected' : '' }}>Diamankan</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="bk-label">Kategori</label>
-                        <select name="kategori" class="bk-input" required>
-                            @foreach(['Elektronik','Dokumen/Kartu','Aksesoris','Kendaraan','Pakaian','Lainnya'] as $kat)
-                                <option value="{{ $kat }}" {{ old('kategori') == $kat ? 'selected' : '' }}>{{ $kat }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-
-                {{-- Nama Barang --}}
-                <div style="margin-bottom:1.25rem">
-                    <label class="bk-label">Nama Barang</label>
-                    <input type="text" name="nama_barang" value="{{ old('nama_barang') }}"
-                           class="bk-input" placeholder="Contoh: Dompet kulit hitam" required>
-                </div>
-
-                {{-- Lokasi --}}
-                <div style="margin-bottom:1.25rem">
-                    <label class="bk-label">Lokasi Kejadian</label>
-                    <input type="text" name="lokasi" value="{{ old('lokasi') }}"
-                           class="bk-input" placeholder="Contoh: Parkiran Gedung F, Lantai 2" required>
-                </div>
-
-                {{-- Waktu --}}
-                <div style="margin-bottom:1.25rem">
-                    <label class="bk-label">Waktu Kejadian</label>
-                    <input type="datetime-local" name="waktu_kejadian" value="{{ old('waktu_kejadian') }}"
-                           class="bk-input" required>
-                </div>
-
-                {{-- Deskripsi --}}
-                <div style="margin-bottom:1.25rem">
-                    <label class="bk-label">Deskripsi & Ciri-ciri</label>
-                    <textarea name="deskripsi" rows="3" class="bk-input"
-                              placeholder="Sebutkan ciri-ciri spesifik, warna, merek, atau detail lain..."
-                              style="resize:vertical" required>{{ old('deskripsi') }}</textarea>
-                </div>
-
-                {{-- Foto --}}
-                <div style="margin-bottom:1.75rem">
-                    <label class="bk-label">Foto Barang (Opsional)</label>
-                    <div style="border:2px dashed var(--border);border-radius:var(--radius-md);padding:1.25rem;text-align:center;cursor:pointer;transition:border-color 0.15s"
-                         onclick="document.getElementById('modal-foto-input').click()">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
-                             stroke="var(--ink-faint)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
-                             style="margin:0 auto 0.35rem;display:block">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                            <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
-                        </svg>
-                        <p id="modal-foto-label" style="font-size:0.8rem;color:var(--ink-faint);margin:0">Klik untuk unggah foto</p>
-                        <input id="modal-foto-input" type="file" name="foto" accept="image/*" style="display:none"
-                               onchange="modalPreviewFoto(this)">
-                    </div>
-                </div>
-
-                {{-- Actions --}}
-                <div style="display:flex;justify-content:flex-end;gap:0.75rem">
-                    <button type="button" onclick="document.getElementById('modal-tambah-post').style.display='none'"
-                            class="bk-btn bk-btn--ghost">Batal</button>
-                    <button type="submit" class="bk-btn bk-btn--primary" style="display:flex;align-items:center;gap:0.4rem">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-                            <polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
-                        </svg>
-                        Simpan Postingan
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-@push('scripts')
-<script>
-    function modalPreviewFoto(input) {
-        if (input.files && input.files[0]) {
-            document.getElementById('modal-foto-label').textContent = '✓ ' + input.files[0].name;
-        }
-    }
-    // Buka modal kembali jika ada error validasi (setelah redirect back)
-    @if($errors->any())
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('modal-tambah-post').style.display = 'flex';
-        });
-    @endif
-</script>
-@endpush
 
 </x-admin-layout>

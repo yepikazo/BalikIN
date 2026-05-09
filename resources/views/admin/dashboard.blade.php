@@ -33,7 +33,7 @@
     {{-- Quick Actions --}}
     <div class="bk-card" style="padding:2rem;margin-bottom:1.5rem">
         <h2 style="font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:1.25rem;letter-spacing:-0.01em">Aksi Cepat</h2>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem">
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:0.75rem">
             <a href="{{ route('admin.postingan.index') }}" class="bk-btn bk-btn--primary"
                style="justify-content:center;gap:0.5rem;padding:0.75rem 1rem">
                 <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
@@ -58,7 +58,7 @@
                     <span style="background:white;color:var(--danger);border-radius:var(--radius-full);font-size:0.7rem;font-weight:700;padding:1px 7px;min-width:20px;text-align:center">{{ $laporanPending }}</span>
                 @endif
             </a>
-            <a href="{{ route('beranda') }}" class="bk-btn bk-btn--ghost" target="_blank"
+            {{-- <a href="{{ route('beranda') }}" class="bk-btn bk-btn--ghost" target="_blank"
                style="justify-content:center;gap:0.5rem;padding:0.75rem 1rem">
                 <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -66,7 +66,7 @@
                     <polyline points="9 22 9 12 15 12 15 22"/>
                 </svg>
                 Lihat Beranda
-            </a>
+            </a> --}}
         </div>
     </div>
 
